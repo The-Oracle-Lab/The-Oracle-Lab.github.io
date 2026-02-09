@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Oracle Lab : Wealth DNA Archives</title>
+    <style>
+        :root { --bg-color: #050505; --card-bg: #111; --text-main: #eee; --accent: #ffd700; /* Gold */ }
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Noto Sans KR', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .category-header { text-align: center; margin-bottom: 40px; border-bottom: 1px solid #333; padding-bottom: 20px; width: 100%; max-width: 500px; }
+        .category-title { font-size: 1.8rem; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-weight: bold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); margin: 0; }
+        .category-desc { font-size: 0.8rem; color: #888; margin-top: 10px; }
+        .test-list { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; max-width: 500px; }
+        .test-card { background: var(--card-bg); border: 1px solid #333; border-left: 5px solid var(--accent); border-radius: 10px; padding: 20px; text-decoration: none; color: inherit; display: block; transition: all 0.2s; }
+        .test-card:hover { transform: translateX(5px); background: #1a1a1a; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
+        .test-title { font-size: 1.1rem; font-weight: bold; display: block; margin-bottom: 5px; }
+        .test-desc { font-size: 0.8rem; color: #aaa; display: block; }
+        .tag { font-size: 0.6rem; padding: 2px 6px; background: #222; color: var(--accent); border-radius: 3px; margin-right: 5px; border: 1px solid var(--accent); }
+        .back-btn { margin-top: 50px; color: #666; text-decoration: none; font-size: 0.8rem; border: 1px solid #333; padding: 10px 20px; border-radius: 20px; transition: 0.2s; }
+        .back-btn:hover { color: #fff; border-color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="category-header">
+        <div class="category-title">💰 Wealth DNA</div>
+        <div class="category-desc">자본주의 생존을 위한 행동경제학적 분석</div>
+    </div>
+    <div class="test-list">
+        <a href="test1.html" class="test-card">
+            <span class="test-title"><span class="tag">HOT</span> 행동경제학적 부(富)의 그릇 진단</span>
+            <span class="test-desc">충동(Impulse), 리스크(Risk), 계산(Logic) 3축 분석</span>
+        </a>
+        <div class="test-card" style="opacity: 0.5; cursor: default;" onclick="alert('제작 중입니다.')">
+            <span class="test-title"><span class="tag" style="border-color:#555; color:#555;">SOON</span> 2026년 도파민 소비 패턴 예측</span>
+            <span class="test-desc">나는 왜 돈을 못 모으는가? 뇌과학적 접근</span>
+        </div>
+    </div>
+    <a href="../index.html" class="back-btn">← Main Lobby</a>
+</body>
+</html>
