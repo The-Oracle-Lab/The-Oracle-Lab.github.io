@@ -3,43 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Oracle Lab : 데이터 기반 무의식 분석</title>
+    <title>The Oracle Lab : 무의식 분석 연구소</title>
     <style>
-        :root { --bg-color: #050505; --card-bg: #111; --text-main: #fff; --accent-dark: #ff0055; }
-        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Noto Sans KR', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        h1 { font-size: 1.5rem; letter-spacing: 3px; margin-bottom: 5px; text-transform: uppercase; background: linear-gradient(90deg, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .subtitle { color: #666; font-size: 0.8rem; margin-bottom: 40px; }
-        .grid-container { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; max-width: 400px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 20px; text-align: left; position: relative; cursor: pointer; transition: transform 0.2s; border: 1px solid #222; text-decoration: none; display: block; color: inherit; }
+        /* Design System: Cyberpunk Dark */
+        :root {
+            --bg-color: #050505;
+            --card-bg: #111;
+            --text-main: #fff;
+            --accent-dark: #ff0055; /* Dark Side Color */
+            --accent-gold: #ffd700; /* Money Color */
+            --accent-love: #ff69b4; /* Love Color */
+            --accent-ego: #00ff41;  /* Ego Color */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle { color: #666; font-size: 0.8rem; margin-bottom: 30px; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* 카드 공통 디자인 */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #222;
+            text-decoration: none; /* 링크 밑줄 제거 */
+            display: block; /* a태그를 박스로 만듦 */
+            color: inherit;
+        }
+
+        .card:hover { transform: translateY(-3px); }
         .card:active { transform: scale(0.98); }
+
         .card-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; display: block; }
-        .card-desc { font-size: 0.8rem; color: #888; display: block; }
-        .status { position: absolute; top: 20px; right: 20px; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: #222; color: #555; }
+        .card-desc { font-size: 0.8rem; color: #888; display: block; line-height: 1.4; }
+        
+        .status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.65rem;
+            padding: 3px 6px;
+            border-radius: 4px;
+            background: #222;
+            color: #555;
+            font-weight: bold;
+        }
+
+        /* 4대 카테고리별 전용 스타일 */
+        
+        /* 1. Dark Side (활성화) */
         .style-dark { border-left: 4px solid var(--accent-dark); }
-        .active-badge { background: var(--accent-dark); color: #fff; }
+        .style-dark:hover { box-shadow: 0 0 15px rgba(255, 0, 85, 0.2); }
+        .badge-active { background: var(--accent-dark); color: #fff; }
+
+        /* 2. Money (준비중) */
+        .style-money { border-left: 4px solid var(--accent-gold); }
+        .style-money:hover { box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
+
+        /* 3. Love (준비중) */
+        .style-love { border-left: 4px solid var(--accent-love); }
+        .style-love:hover { box-shadow: 0 0 15px rgba(255, 105, 180, 0.2); }
+
+        /* 4. Ego (준비중) */
+        .style-ego { border-left: 4px solid var(--accent-ego); }
+        .style-ego:hover { box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
+
         .footer { margin-top: 50px; font-size: 0.7rem; color: #333; }
+
     </style>
 </head>
 <body>
+
     <h1>The Oracle Lab</h1>
     <div class="subtitle">Data-Driven Unconscious Analysis</div>
+
     <div class="grid-container">
+        
         <a href="dark/index.html" class="card style-dark">
-            <span class="status active-badge">OPEN</span>
+            <span class="status badge-active">OPEN</span>
             <span class="card-title">☠️ Dark Side Audit</span>
             <span class="card-desc">잠재적 반사회성 & 빌런 유형 정밀 진단</span>
         </a>
-        <div class="card" style="border-left: 4px solid #ffd700;" onclick="alert('데이터 수집 중입니다.')">
+
+        <div class="card style-money" onclick="alert('현재 데이터 모델링 중입니다. 2026년 상반기 오픈 예정.')">
             <span class="status">SOON</span>
             <span class="card-title">💰 Wealth DNA</span>
-            <span class="card-desc">2026년 재물운 및 도파민 소비 통제력</span>
+            <span class="card-desc">재물운 & 도파민 소비 통제력 분석</span>
         </div>
-        <div class="card" style="border-left: 4px solid #ff69b4;" onclick="alert('데이터 수집 중입니다.')">
+
+        <div class="card style-love" onclick="alert('현재 데이터 모델링 중입니다. 2026년 상반기 오픈 예정.')">
             <span class="status">SOON</span>
             <span class="card-title">💘 Love & Pheromone</span>
             <span class="card-desc">성인 애착 유형 및 생물학적 매력도</span>
         </div>
+
+        <div class="card style-ego" onclick="alert('현재 데이터 모델링 중입니다. 2026년 상반기 오픈 예정.')">
+            <span class="status">SOON</span>
+            <span class="card-title">🎭 Social Persona</span>
+            <span class="card-desc">사회적 가면 증후군 & 내면 불일치도</span>
+        </div>
+
     </div>
+
     <div class="footer">© 2026 The Oracle Lab.</div>
+
 </body>
 </html>
