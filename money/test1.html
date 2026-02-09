@@ -3,130 +3,870 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="The Oracle Lab : 부(富)의 그릇 정밀 진단">
-    <meta property="og:description" content="나의 자본주의 생존 등급을 행동경제학 데이터로 분석합니다.">
-    <title>The Oracle Lab : Wealth DNA Audit</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>부의 그릇 진단 | The Oracle Lab</title>
     <style>
-        :root { --bg-color: #050505; --card-bg: #111; --text-main: #eee; --accent: #ffd700; /* Gold */ --danger: #ff4500; --dim: #444; }
-        * { box-sizing: border-box; }
-        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Noto Sans KR', sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 500px; background: var(--card-bg); padding: 30px 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; position: relative; }
-        h1 { font-size: 1.2rem; color: var(--dim); letter-spacing: 2px; margin-bottom: 40px; text-transform: uppercase; border-bottom: 1px solid var(--dim); padding-bottom: 10px; width: 100%; text-align: center; }
-        .logo-accent { color: var(--accent); font-weight: bold; }
-        #quiz-box { width: 100%; text-align: left; }
-        .progress-bar { width: 100%; height: 4px; background: #222; margin-bottom: 30px; border-radius: 2px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; box-shadow: 0 0 10px var(--accent); }
-        .q-badge { background: rgba(255, 215, 0, 0.1); color: var(--accent); padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; margin-bottom: 15px; display: inline-block; }
-        .question-text { font-size: 1.3rem; font-weight: bold; line-height: 1.5; margin-bottom: 40px; min-height: 80px; }
-        .btn { width: 100%; padding: 18px; margin-bottom: 12px; background: transparent; border: 1px solid var(--dim); color: #fff; font-size: 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; }
-        .btn:hover { border-color: var(--accent); background: rgba(255, 215, 0, 0.05); }
-        .btn:active { transform: scale(0.98); }
-        #loading-box { display: none; text-align: center; padding-top: 100px; }
-        .spinner { width: 50px; height: 50px; border: 3px solid #222; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-text { color: var(--accent); font-family: monospace; font-size: 0.9rem; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0.5; } }
-        #result-box { display: none; width: 100%; text-align: center; animation: fadeIn 1s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .result-type { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin: 20px 0; text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
-        .chart-container { position: relative; height: 280px; width: 100%; margin: 20px 0; }
-        .analysis-box { background: #1a1a1a; padding: 20px; border-radius: 10px; text-align: left; margin-bottom: 30px; border-left: 4px solid var(--accent); font-size: 0.95rem; line-height: 1.6; color: #ccc; }
-        .cta-btn { background: var(--accent); color: #000; font-weight: bold; border: none; text-align: center; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); margin-top: 10px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
-        .footer { margin-top: 50px; font-size: 0.7rem; color: #444; text-align: center; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cyber-gold: #FFD700;
+            --cyber-dark: #0a0a0a;
+            --cyber-purple: #8B5CF6;
+            --cyber-blue: #3B82F6;
+            --cyber-gray: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--cyber-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animated {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--cyber-gold) 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--cyber-gray);
+            border-radius: 10px;
+            height: 6px;
+            margin: 30px 0;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyber-purple) 0%, var(--cyber-gold) 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .progress-text {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: var(--cyber-gray);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            animation: fadeIn 0.5s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .question-number {
+            color: var(--cyber-gold);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* Answer Options */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .option:hover::before {
+            left: 100%;
+        }
+
+        .option:hover {
+            border-color: var(--cyber-gold);
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: var(--cyber-gold);
+            background: rgba(255, 215, 0, 0.15);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Result Section */
+        .result-section {
+            display: none;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .result-header {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .result-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--cyber-gold) 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .result-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        /* Matrix Visualization */
+        .matrix-container {
+            background: var(--cyber-gray);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .matrix-cell {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .matrix-cell.active {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+            border-color: var(--cyber-gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .axis-label {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+
+        .axis-y {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: var(--cyber-gray);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--cyber-gold) 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Description */
+        .description-card {
+            background: var(--cyber-gray);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .description-card h3 {
+            color: var(--cyber-gold);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .description-card p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .trait-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .trait-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .trait-list li:last-child {
+            border-bottom: none;
+        }
+
+        .trait-list li::before {
+            content: '▸ ';
+            color: var(--cyber-gold);
+            font-weight: bold;
+        }
+
+        /* CTA Button */
+        .cta-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--cyber-gold) 0%, #FFA500 100%);
+            color: var(--cyber-dark);
+            padding: 18px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .back-button {
+            display: inline-block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 15px 30px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 30px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            border-color: var(--cyber-gold);
+            color: var(--cyber-gold);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .question-text {
+                font-size: 1.05rem;
+            }
+
+            .result-title {
+                font-size: 2rem;
+            }
+
+            .matrix-cell {
+                font-size: 0.7rem;
+                padding: 5px;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>The <span class="logo-accent">Oracle</span> Lab</h1>
-    <div id="quiz-box">
-        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-        <div class="q-badge" id="q-num">Q1 / 12</div>
-        <div class="question-text" id="q-text">데이터 로딩 중...</div>
-        <button class="btn" onclick="next(10)">매우 그렇다</button>
-        <button class="btn" onclick="next(5)">어느 정도 그렇다</button>
-        <button class="btn" onclick="next(0)">전혀 아니다</button>
+    <div class="bg-animated"></div>
+    
+    <div class="container">
+        <!-- Test Section -->
+        <div id="testSection">
+            <div class="header">
+                <h1>💰 부의 그릇 진단</h1>
+                <p>15개의 질문으로 당신의 재무 DNA를 해독합니다</p>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-text" id="progressText">질문 1 / 15</div>
+
+            <div class="question-card" id="questionCard">
+                <div class="question-number" id="questionNumber">Question 1</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="result-section">
+            <div class="result-header">
+                <div class="result-title" id="archetypeName"></div>
+                <div class="result-subtitle" id="archetypeTagline"></div>
+            </div>
+
+            <div class="matrix-container">
+                <div class="axis-label axis-y">위험 감수성</div>
+                <div class="matrix-grid" id="matrixGrid"></div>
+                <div class="axis-label">지출 통제력</div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-value" id="spendingScore"></div>
+                    <div class="stat-label">지출 통제력</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="riskScore"></div>
+                    <div class="stat-label">위험 감수성</div>
+                </div>
+            </div>
+
+            <div class="description-card">
+                <h3>🎯 핵심 특징</h3>
+                <p id="mainDescription"></p>
+            </div>
+
+            <div class="description-card">
+                <h3>⚡ 행동 패턴</h3>
+                <ul class="trait-list" id="traitList"></ul>
+            </div>
+
+            <div class="description-card">
+                <h3>💡 성장 전략</h3>
+                <p id="growthStrategy"></p>
+            </div>
+
+            <div class="cta-container">
+                <a href="#" class="cta-button">🚀 그릇 확장하기 (커뮤니티)</a>
+                <br>
+                <a href="../money/index.html" class="back-button">← 다른 테스트 보기</a>
+            </div>
+        </div>
     </div>
-    <div id="loading-box">
-        <div class="spinner"></div>
-        <div class="loading-text">CALCULATING WEALTH DNA...<br>ANALYZING SPENDING PATTERNS...</div>
-    </div>
-    <div id="result-box">
-        <div style="font-size: 0.9rem; color:#888;">당신의 자본주의 생존 등급</div>
-        <div class="result-type" id="result-title"></div>
-        <div class="chart-container"><canvas id="radarChart"></canvas></div>
-        <div class="analysis-box" id="result-desc"></div>
-        <button class="btn cta-btn" onclick="copyLink()">🔗 결과 공유하고 '부자 등급' 비교하기</button>
-        <div style="margin-top: 20px; font-size: 0.75rem; color: #666;">* 이 데이터는 2026년 행동경제학 모델을 따릅니다.</div>
-    </div>
-    <div class="footer">© 2026 The Oracle Lab.</div>
-</div>
-<script>
-    // F: FOMO(충동), R: Risk(위험감수), L: Logic(이성/계산)
-    const qData = [
-        { t: "F", q: "스트레스를 받으면 나도 모르게 '시발비용(홧김비용)'을 쓰게 된다." },
-        { t: "R", q: "100% 확실한 100만원보다, 50% 확률의 500만원 도박을 선택하겠다." },
-        { t: "L", q: "물건을 살 때 g당 가격이나 할인율을 계산하지 않으면 찝찝하다." },
-        { t: "F", q: "'한정판'이나 '마감 임박'이라는 말을 보면 마음이 급해진다." },
-        { t: "R", q: "남들이 다 말리는 주식이나 코인에 전 재산을 태워본 적이 있다." },
-        { t: "L", q: "매달 고정지출과 변동지출을 정확하게 파악하고 기록한다." },
-        { t: "F", q: "새벽에 감성에 젖어 인터넷 쇼핑을 결제하고 아침에 후회한 적이 있다." },
-        { t: "R", q: "인생은 한 방이다. 티끌 모아봐야 티끌이다." },
-        { t: "L", q: "감정적인 호소보다는 구체적인 수치와 데이터만 믿는다." },
-        { t: "F", q: "친구가 산 물건이 좋아 보이면 당장 나도 사야 직성이 풀린다." },
-        { t: "R", q: "대출을 받아서라도 투자 기회를 잡는 것은 능력이라고 생각한다." },
-        { t: "L", q: "미래의 이득을 위해 현재의 고통(절약)을 즐겁게 감수할 수 있다." }
-    ];
-    // H: High, L: Low (F-R-L 순서)
-    const rData = {
-        "HHH": { title: "폭주하는 도박사 (The Gambler)", desc: "충동성도 높고 리스크도 즐기는데 계산까지 빠릅니다. 큰돈을 벌 수도 있지만, 한 번의 실수로 나락으로 갈 수 있는 '야수' 유형입니다. 도파민 통제가 시급합니다." },
-        "HHL": { title: "파멸적 몽상가 (The Dreamer)", desc: "충동적이고 위험을 즐기지만, 계산은 안 합니다. '언젠가 떡상하겠지'라며 돈을 뿌리고 다닙니다. 가장 위험한 '호구' 등급입니다. 당장 가계부를 쓰세요." },
-        "HLH": { title: "과시형 전략가 (The Flexer)", desc: "충동적이고 계산적입니다. 명품이나 차에는 돈을 쓰지만, 콩나물 값은 아낍니다. 남들에게 보여주기 위한 '가성비 사치'를 즐깁니다." },
-        "HLL": { title: "감정적 탕진러 (The Spender)", desc: "기분에 죽고 기분에 삽니다. 리스크는 무섭지만 자잘한 소비로 통장을 텅장으로 만듭니다. '오늘만 산다'가 인생 모토입니다." },
-        "LHH": { title: "냉철한 승부사 (The Wolf)", desc: "충동은 없는데 리스크는 걸고, 계산은 철저합니다. 워렌 버핏보다는 '헤지펀드 매니저' 스타일입니다. 부자가 될 확률이 가장 높습니다." },
-        "LHL": { title: "무모한 개미 (The Ant)", desc: "충동은 없는데 근거 없는 리스크를 집니다. 남들이 좋다는 소문에 뒤늦게 탑승했다가 물리는 전형적인 유형입니다." },
-        "LLH": { title: "자린고비 스크루지 (The Saver)", desc: "돈 쓰는 것도 싫고 잃는 것도 싫습니다. 오직 통장 잔고가 늘어나는 것에서만 쾌락을 느낍니다. 부자는 되지만 재미는 없습니다." },
-        "LLL": { title: "무욕의 평화주의자 (The Monk)", desc: "돈에 관심이 없습니다. 소비도, 투자도, 계산도 안 합니다. 자본주의 사회에서 해탈한 존재입니다. 생존을 위해 최소한의 경제 관념은 필요합니다." }
-    };
-    let step = 0; let scores = { F: 0, R: 0, L: 0 };
-    function next(val) { scores[qData[step].t] += val; step++; updateUI(); }
-    function updateUI() {
-        if (step < qData.length) {
-            document.getElementById('q-num').innerText = `Q${step + 1} / ${qData.length}`;
-            document.getElementById('q-text').innerText = qData[step].q;
-            document.getElementById('progress').style.width = ((step / qData.length) * 100) + "%";
-        } else { showLoading(); }
-    }
-    function showLoading() {
-        document.getElementById('quiz-box').style.display = 'none';
-        document.getElementById('loading-box').style.display = 'block';
-        setTimeout(() => { document.getElementById('loading-box').style.display = 'none'; showResult(); }, 2500);
-    }
-    function showResult() {
-        document.getElementById('result-box').style.display = 'block';
-        const f = scores.F >= 20 ? "H" : "L"; const r = scores.R >= 20 ? "H" : "L"; const l = scores.L >= 20 ? "H" : "L";
-        const data = rData[f + r + l];
-        document.getElementById('result-title').innerText = data.title;
-        document.getElementById('result-desc').innerHTML = data.desc;
-        drawChart();
-    }
-    function drawChart() {
-        if (window.myRadarChart) window.myRadarChart.destroy();
-        const ctx = document.getElementById('radarChart').getContext('2d');
-        window.myRadarChart = new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels: ['충동성(FOMO)', '리스크(Risk)', '이성(Logic)'],
-                datasets: [{ label: 'Wealth DNA', data: [scores.F, scores.R, scores.L], backgroundColor: 'rgba(255, 215, 0, 0.2)', borderColor: '#ffd700', pointBackgroundColor: '#fff', borderWidth: 2 }]
+
+    <script>
+        // Questions Database (Behavioral Economics Based)
+        const questions = [
+            {
+                text: "월급이 들어왔다. 당신의 첫 행동은?",
+                options: [
+                    { text: "즉시 투자처를 찾아본다", spending: 3, risk: 3 },
+                    { text: "예산을 세우고 저축 먼저", spending: 1, risk: 1 },
+                    { text: "필요한 것부터 결제", spending: 2, risk: 2 },
+                    { text: "일단 놔두고 천천히 생각", spending: 2, risk: 1 }
+                ]
             },
-            options: { scales: { r: { angleLines: { color: '#333' }, grid: { color: '#333' }, pointLabels: { color: '#eee', font: {size: 12} }, suggestedMin: 0, suggestedMax: 40, ticks: { display: false } } }, plugins: { legend: { display: false } }, maintainAspectRatio: false }
-        });
-    }
-    function copyLink() {
-        navigator.clipboard.writeText(window.location.href).then(() => { alert("🔗 링크 복사 완료!\n친구들에게 당신의 부자 등급을 자랑하세요."); });
-    }
-    updateUI();
-</script>
+            {
+                text: "80만원짜리 명품 가방 vs 8만원짜리 유사품. 기능은 동일하다.",
+                options: [
+                    { text: "당연히 명품. 투자 가치가 있다", spending: 3, risk: 2 },
+                    { text: "8만원으로 해결하고 차액 저축", spending: 1, risk: 1 },
+                    { text: "40만원대 중간 브랜드 선택", spending: 2, risk: 2 },
+                    { text: "가방 자체가 필요한가 재고", spending: 1, risk: 1 }
+                ]
+            },
+            {
+                text: "10만원 쿠폰이 내일 만료된다. 당장 살 건 없다.",
+                options: [
+                    { text: "뭐라도 사서 쿠폰 활용", spending: 3, risk: 2 },
+                    { text: "필요 없으면 그냥 버림", spending: 1, risk: 1 },
+                    { text: "선물용으로 미리 구매", spending: 2, risk: 2 },
+                    { text: "지인에게 양도", spending: 1, risk: 1 }
+                ]
+            },
+            {
+                text: "3년 구독한 넷플릭스. 요즘 안 본다.",
+                options: [
+                    { text: "언젠간 보겠지, 유지", spending: 3, risk: 1 },
+                    { text: "즉시 해지", spending: 1, risk: 1 },
+                    { text: "한 달 더 보고 결정", spending: 2, risk: 2 },
+                    { text: "가족과 공유로 전환", spending: 1, risk: 2 }
+                ]
+            },
+            {
+                text: "주식 투자 제안. 50% 확률로 2배 vs 50% 확률로 0원",
+                options: [
+                    { text: "전 재산 투자", spending: 3, risk: 3 },
+                    { text: "절대 안 함", spending: 1, risk: 1 },
+                    { text: "여유 자금 10%만", spending: 2, risk: 2 },
+                    { text: "정보 더 모은 후 판단", spending: 2, risk: 2 }
+                ]
+            },
+            {
+                text: "100만원이 생겼다. 현재 저축 300만원 보유 중.",
+                options: [
+                    { text: "전액 코인 투자", spending: 3, risk: 3 },
+                    { text: "전액 적금 추가", spending: 1, risk: 1 },
+                    { text: "50만원 투자, 50만원 저축", spending: 2, risk: 2 },
+                    { text: "일단 통장에 두고 고민", spending: 2, risk: 1 }
+                ]
+            },
+            {
+                text: "블랙프라이데이. 평소 사려던 100만원 노트북이 70만원.",
+                options: [
+                    { text: "바로 결제. 30만원 이득", spending: 3, risk: 2 },
+                    { text: "정말 필요한지 다시 생각", spending: 1, risk: 1 },
+                    { text: "리뷰 찾아본 후 결정", spending: 2, risk: 2 },
+                    { text: "중고 시장 먼저 확인", spending: 1, risk: 2 }
+                ]
+            },
+            {
+                text: "카페 아메리카노 4,500원 vs 편의점 커피 1,500원",
+                options: [
+                    { text: "매일 카페. 분위기 값 포함", spending: 3, risk: 2 },
+                    { text: "집에서 타먹기", spending: 1, risk: 1 },
+                    { text: "중요한 날만 카페", spending: 2, risk: 2 },
+                    { text: "편의점 커피로 충분", spending: 1, risk: 1 }
+                ]
+            },
+            {
+                text: "친구가 '대박' 투자 제안. 신뢰하는 친구다.",
+                options: [
+                    { text: "친구 믿고 올인", spending: 3, risk: 3 },
+                    { text: "정중히 거절", spending: 1, risk: 1 },
+                    { text: "소액만 참여", spending: 2, risk: 2 },
+                    { text: "구조 분석 후 판단", spending: 2, risk: 2 }
+                ]
+            },
+            {
+                text: "연봉 5천만원 직장 vs 성공 시 5억 스타트업",
+                options: [
+                    { text: "당장 이직", spending: 3, risk: 3 },
+                    { text: "현재 직장 유지", spending: 1, risk: 1 },
+                    { text: "부업으로 병행", spending: 2, risk: 2 },
+                    { text: "1년 준비 후 도전", spending: 2, risk: 2 }
+                ]
+            },
+            {
+                text: "배달비 5천원 vs 직접 가기 (왕복 30분)",
+                options: [
+                    { text: "시간이 돈. 배달 주문", spending: 3, risk: 2 },
+                    { text: "당연히 직접", spending: 1, risk: 1 },
+                    { text: "날씨 보고 결정", spending: 2, risk: 2 },
+                    { text: "집밥 먹기", spending: 1, risk: 1 }
+                ]
+            },
+            {
+                text: "신용카드 리볼빙(분할) 권유",
+                options: [
+                    { text: "당장 현금 없으면 사용", spending: 3, risk: 3 },
+                    { text: "절대 불가", spending: 1, risk: 1 },
+                    { text: "진짜 급할 때만", spending: 2, risk: 2 },
+                    { text: "카드 해지 고려", spending: 1, risk: 1 }
+                ]
+            },
+            {
+                text: "보험 설계사가 '필수' 보험 추천",
+                options: [
+                    { text: "추천대로 가입", spending: 3, risk: 2 },
+                    { text: "보험 불필요", spending: 1, risk: 1 },
+                    { text: "필수만 최소 가입", spending: 2, risk: 2 },
+                    { text: "3곳 비교 후 결정", spending: 2, risk: 2 }
+                ]
+            },
+            {
+                text: "주식 10만원 손실. 현재 평단가 회복 가능성 50%.",
+                options: [
+                    { text: "물타기 추가 매수", spending: 3, risk: 3 },
+                    { text: "손절 후 이탈", spending: 1, risk: 1 },
+                    { text: "홀딩하며 관망", spending: 2, risk: 2 },
+                    { text: "반만 정리", spending: 2, risk: 2 }
+                ]
+            },
+            {
+                text: "은퇴 후 삶을 상상한다면?",
+                options: [
+                    { text: "세계일주 하며 펑펑 쓰기", spending: 3, risk: 3 },
+                    { text: "조용한 시골 집에서 자급자족", spending: 1, risk: 1 },
+                    { text: "취미 생활과 여행의 균형", spending: 2, risk: 2 },
+                    { text: "자녀에게 유산 남기기", spending: 1, risk: 1 }
+                ]
+            }
+        ];
+
+        // Archetypes (9 Types)
+        const archetypes = {
+            "1-1": {
+                name: "🏔️ The Fortress Keeper",
+                tagline: "당신의 금고는 난공불락 요새",
+                description: "극도의 절제력과 안정 추구. 손실 회피 성향이 극대화된 유형. 돈을 '지키는 것'에 천재적이나 '불리는 것'에는 보수적. 복리의 힘을 믿지만 시간이 오래 걸린다.",
+                traits: [
+                    "월급의 50% 이상 저축 가능",
+                    "충동구매 거의 없음",
+                    "투자보다 예금 선호",
+                    "장기적 안정성 최우선"
+                ],
+                growth: "위험 자산 5~10% 도입 필요. '잃지 않는 것'만큼 '기회 손실'도 비용임을 인식하라. ETF 같은 분산 투자로 시작 추천."
+            },
+            "1-2": {
+                name: "🛡️ The Prudent Sentinel",
+                tagline: "계산된 방어는 최고의 공격",
+                description: "절제된 소비 + 중간 수준의 위험 감수. 안전한 투자처를 찾아 꾸준히 자산을 불린다. '묻지마 투자'는 안 하지만 검증된 기회는 놓치지 않는다.",
+                traits: [
+                    "적금 + 안전 채권 혼합 투자",
+                    "불필요한 지출 즉시 차단",
+                    "리스크는 최소화하되 기회는 포착",
+                    "재무 목표 달성률 높음"
+                ],
+                growth: "당신의 강점은 '지속성'. 자동화된 투자 시스템 구축하면 복리 효과 극대화. 연 7~10% 수익률 목표 적정."
+            },
+            "1-3": {
+                name: "🎯 The Sniper Investor",
+                tagline: "쏘지 않는다. 맞출 때만 쏜다.",
+                description: "극도의 절제 + 공격적 투자 성향. 평소엔 1원도 안 쓰다가 확실한 기회 포착 시 올인. 워렌 버핏 스타일. 실패 확률은 낮지만 성공 시 수익률 폭발.",
+                traits: [
+                    "현금 보유율 높음 (기회 대기)",
+                    "충동구매 0%",
+                    "투자는 '확신' 있을 때만",
+                    "손실 거의 없지만 기회도 적음"
+                ],
+                growth: "기회 포착 빈도를 높여라. 과도한 '완벽주의'가 기회비용 초래 가능. 분산 투자로 리스크 헷징 고려."
+            },
+            "2-1": {
+                name: "⚖️ The Balanced Architect",
+                tagline: "중용의 미학, 무너지지 않는 설계",
+                description: "적당한 소비 + 안전 투자. 가장 '정상적'인 재무 행동 패턴. 극단적이지 않아 실수도 적지만 대박도 없다. 안정적 부의 축적에 최적화.",
+                traits: [
+                    "월급의 20~30% 저축",
+                    "가끔 충동구매, 하지만 후회 적음",
+                    "안전 자산 위주, 주식 소량",
+                    "재무 스트레스 낮음"
+                ],
+                growth: "현재 상태 유지도 좋지만, 수익률 향상 원한다면 위험자산 비율 10→20% 증가 고려. 장기 관점 유지."
+            },
+            "2-2": {
+                name: "🌊 The Wave Rider",
+                tagline: "흐름을 읽고, 파도를 탄다",
+                description: "균형 잡힌 소비 + 중간 위험 투자. 시장 흐름을 읽는 능력 있음. 너무 보수적이지도, 무모하지도 않음. 대부분의 '성공한 투자자'가 이 유형.",
+                traits: [
+                    "포트폴리오 다각화",
+                    "소비와 투자 균형",
+                    "시장 트렌드 주시",
+                    "실수 시 빠른 복구력"
+                ],
+                growth: "당신은 이미 최적화 구간. 이제 '규모'를 키워라. 수익의 재투자 비율 높이고, 복리 가속화. 목표: 연 15% 수익."
+            },
+            "2-3": {
+                name: "🎲 The Calculated Gambler",
+                tagline: "도박이 아니다. 확률 게임이다.",
+                description: "적당한 소비 + 공격적 투자. 위험을 '감수'가 아닌 '관리'한다. 손실 나도 포트폴리오 전체로 커버. 젊은 부자들이 많은 유형.",
+                traits: [
+                    "고위험 자산 30~50%",
+                    "손실도 '비용'으로 인식",
+                    "빠른 의사결정",
+                    "변동성 스트레스 내성 강함"
+                ],
+                growth: "당신의 약점은 '과신'. 레버리지 투자는 신중히. 일부는 안전 자산으로 리밸런싱 필수. 폭락 시나리오 항상 대비."
+            },
+            "3-1": {
+                name: "💸 The Hedonist Hoarder",
+                tagline: "쓰고 싶지만, 미래가 두렵다",
+                description: "높은 지출 성향 + 보수적 투자. 소비 욕구 강하지만 투자는 안전하게. 현재를 즐기되 미래도 걱정. 내적 갈등 큰 유형. 저축률 낮음.",
+                traits: [
+                    "월급의 80% 이상 소비",
+                    "명품, 여행 등 경험 소비",
+                    "투자는 예금/적금만",
+                    "노후 불안감 있음"
+                ],
+                growth: "소비 자체가 문제 아님. 문제는 '증식 없는 소비'. 소득의 10%라도 공격적 투자로 전환. 작은 씨앗이 큰 나무 된다."
+            },
+            "3-2": {
+                name: "🔥 The Flame Walker",
+                tagline: "불 속을 걷지만, 타지 않는다",
+                description: "높은 지출 + 중간 위험 투자. 펑펑 쓰지만 투자로 메꾼다. 소득이 높거나, 현금흐름 관리 능력 탁월. 위험한 줄타기지만 성공 시 '부자의 삶' 누림.",
+                traits: [
+                    "소비 많지만 투자도 함",
+                    "현금흐름 최적화",
+                    "고소득자 or 사업가 많음",
+                    "재무 스트레스 높음"
+                ],
+                growth: "당신은 '버는 능력'은 있다. 문제는 지속 가능성. 소득 감소 시나리오 대비. 비상금 6개월치 필수. 변동성 심한 삶."
+            },
+            "3-3": {
+                name: "⚡ The Phoenix Protocol",
+                tagline: "재가 될 수도, 불사조가 될 수도",
+                description: "최고 지출 + 최고 위험 투자. '올인' 성향. 대박 아니면 쪽박. 일론 머스크 스타일. 성공하면 억만장자, 실패하면 빚더미. 극단의 유형.",
+                traits: [
+                    "파산과 부자 경험 모두 가능",
+                    "레버리지 투자 선호",
+                    "소비도, 투자도 극단적",
+                    "스트레스 극한"
+                ],
+                growth: "당신은 '큰 그릇'을 가졌지만 '깨진 그릇'일 수도. 포트폴리오의 30%는 안전 자산으로. 망해도 재기 가능한 구조 필수. 보험 중요."
+            }
+        };
+
+        // State
+        let currentQuestion = 0;
+        let answers = [];
+        let scores = { spending: 0, risk: 0 };
+
+        // Initialize
+        function init() {
+            loadQuestion();
+        }
+
+        // Load Question
+        function loadQuestion() {
+            const question = questions[currentQuestion];
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `질문 ${currentQuestion + 1} / ${questions.length}`;
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1}`;
+            document.getElementById('questionText').textContent = question.text;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option.text;
+                optionDiv.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+        }
+
+        // Select Answer
+        function selectAnswer(index) {
+            const question = questions[currentQuestion];
+            const selectedOption = question.options[index];
+            
+            answers.push(selectedOption);
+            scores.spending += selectedOption.spending;
+            scores.risk += selectedOption.risk;
+            
+            // Visual feedback
+            const options = document.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                if (i === index) {
+                    opt.classList.add('selected');
+                }
+            });
+            
+            // Next question after delay
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    loadQuestion();
+                } else {
+                    showResult();
+                }
+            }, 400);
+        }
+
+        // Calculate Archetype
+        function calculateArchetype() {
+            // Normalize scores to 1-3 scale
+            const spendingLevel = Math.ceil(scores.spending / questions.length);
+            const riskLevel = Math.ceil(scores.risk / questions.length);
+            
+            const key = `${spendingLevel}-${riskLevel}`;
+            return {
+                archetype: archetypes[key],
+                spendingLevel,
+                riskLevel,
+                spendingScore: Math.round((scores.spending / (questions.length * 3)) * 100),
+                riskScore: Math.round((scores.risk / (questions.length * 3)) * 100)
+            };
+        }
+
+        // Show Result
+        function showResult() {
+            const result = calculateArchetype();
+            const archetype = result.archetype;
+            
+            // Hide test, show result
+            document.getElementById('testSection').classList.add('hidden');
+            document.getElementById('resultSection').style.display = 'block';
+            
+            // Fill result data
+            document.getElementById('archetypeName').textContent = archetype.name;
+            document.getElementById('archetypeTagline').textContent = archetype.tagline;
+            document.getElementById('spendingScore').textContent = result.spendingScore;
+            document.getElementById('riskScore').textContent = result.riskScore;
+            document.getElementById('mainDescription').textContent = archetype.description;
+            document.getElementById('growthStrategy').textContent = archetype.growth;
+            
+            // Traits
+            const traitList = document.getElementById('traitList');
+            traitList.innerHTML = '';
+            archetype.traits.forEach(trait => {
+                const li = document.createElement('li');
+                li.textContent = trait;
+                traitList.appendChild(li);
+            });
+            
+            // Matrix visualization
+            const matrixGrid = document.getElementById('matrixGrid');
+            matrixGrid.innerHTML = '';
+            
+            const matrixLabels = [
+                ['요새 수호자', '신중한 파수꾼', '저격 투자자'],
+                ['균형 설계자', '파도 라이더', '계산된 도박사'],
+                ['쾌락 저축가', '불 위를 걷는 자', '불사조 프로토콜']
+            ];
+            
+            for (let r = 2; r >= 0; r--) {
+                for (let s = 0; s < 3; s++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'matrix-cell';
+                    cell.textContent = matrixLabels[r][s];
+                    
+                    if (s + 1 === result.spendingLevel && r + 1 === result.riskLevel) {
+                        cell.classList.add('active');
+                    }
+                    
+                    matrixGrid.appendChild(cell);
+                }
+            }
+        }
+
+        // Start
+        init();
+    </script>
 </body>
 </html>
