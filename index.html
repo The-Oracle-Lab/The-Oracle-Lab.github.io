@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta property="og:title" content="The Oracle Lab : 반사회성 스펙트럼 정밀 진단">
+    <meta property="og:description" content="나의 무의식 속에 숨겨진 지배욕, 충동성, 냉담성을 3축 데이터로 분석합니다.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000&auto=format&fit=crop">
+    
+    <title>The Oracle Lab : Dark Side Audit</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* Design System: Cyberpunk Black & Neon Green */
+        :root {
+            --bg-color: #050505;
+            --card-bg: #111;
+            --text-main: #eee;
+            --accent: #00ff41; /* Hacker Green */
+            --danger: #ff0055; /* Warning Red */
+            --dim: #444;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            padding: 30px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        /* Header */
+        h1 {
+            font-size: 1.2rem;
+            color: var(--dim);
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--dim);
+            padding-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .logo-accent { color: var(--accent); font-weight: bold; }
+
+        /* Quiz Section */
+        #quiz-box { width: 100%; text-align: left; }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #222;
+            margin-bottom: 30px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.4s ease;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .q-badge {
+            background: rgba(0, 255, 65, 0.1);
+            color: var(--accent);
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            line-height: 1.5;
+            margin-bottom: 40px;
+            min-height: 80px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            margin-bottom: 12px;
+            background: transparent;
+            border: 1px solid var(--dim);
+            color: #fff;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn:hover {
+            border-color: var(--accent);
+            background: rgba(0, 255, 65, 0.05);
+        }
+        .btn:active { transform: scale(0.98); }
+
+        /* Loading Screen */
+        #loading-box {
+            display: none;
+            text-align: center;
+            padding-top: 100px;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #222;
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { color: var(--accent); font-family: monospace; font-size: 0.9rem; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        /* Result Section */
+        #result-box { display: none; width: 100%; text-align: center; animation: fadeIn 1s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .result-type {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--danger);
+            margin: 20px 0;
+            text-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .analysis-box {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--danger);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        /* Call To Action Buttons */
+        .cta-btn {
+            background: var(--accent);
+            color: #000;
+            font-weight: bold;
+            border: none;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+            margin-top: 10px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 65, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0); }
+        }
+        
+        .footer {
+            margin-top: 50px;
+            font-size: 0.7rem;
+            color: #444;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>The <span class="logo-accent">Oracle</span> Lab</h1>
+
+    <div id="quiz-box">
+        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+        <div class="q-badge" id="q-num">Q1 / 12</div>
+        <div class="question-text" id="q-text">데이터 로딩 중...</div>
+        
+        <button class="btn" onclick="next(10)">매우 그렇다</button>
+        <button class="btn" onclick="next(5)">어느 정도 그렇다</button>
+        <button class="btn" onclick="next(0)">전혀 아니다</button>
+    </div>
+
+    <div id="loading-box">
+        <div class="spinner"></div>
+        <div class="loading-text">ACCESSING NEURAL PATTERNS...<br>ANALYZING DARK TRIAD...</div>
+    </div>
+
+    <div id="result-box">
+        <div style="font-size: 0.9rem; color:#888;">당신의 내면 정밀 분석 결과</div>
+        <div class="result-type" id="result-title"></div>
+        
+        <div class="chart-container">
+            <canvas id="radarChart"></canvas>
+        </div>
+
+        <div class="analysis-box" id="result-desc"></div>
+
+        <button class="btn cta-btn" onclick="copyLink()">
+            🔗 결과 링크 복사하고 친구 반응 보기
+        </button>
+
+        <div style="margin-top: 20px; font-size: 0.75rem; color: #666;">
+            * Project Nightfall 게임은 현재 극비 개발 중입니다.
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2026 The Oracle Lab. All data is encrypted.<br>
+        Designed by Architect.
+    </div>
+</div>
+
+<script>
+    // --- [Data: 12 Questions] ---
+    // Types: D(Dominance/지배), I(Impulsivity/충동), C(Callousness/냉담)
+    const qData = [
+        { t: "C", q: "타인의 감정적 호소는 나에게 있어 '소음'이나 '약점'으로 느껴진다." },
+        { t: "D", q: "원하는 것을 얻기 위해서라면, 거짓말은 유용한 전략일 뿐이다." },
+        { t: "I", q: "장기적인 계획보다 지금 당장의 쾌락과 자극이 훨씬 중요하다." },
+        { t: "D", q: "나는 종종 사람들이 나의 의도대로 움직이도록 상황을 미묘하게 조작한다." },
+        { t: "C", q: "누군가 울고 있을 때, 공감하기보다는 '왜 저러지?'라는 분석적인 생각이 먼저 든다." },
+        { t: "I", q: "위험하거나 스릴 넘치는 상황이 아니면 쉽게 지루함을 느끼고 못 견딘다." },
+        { t: "D", q: "내가 특별한 대우를 받는 것은 나의 능력에 따른 당연한 권리다." },
+        { t: "C", q: "나에게 피해를 준 사람에게는 반드시 그 이상의 고통으로 되돌려줘야 한다." },
+        { t: "I", q: "화가 나면 물건을 던지거나 소리를 지르는 등 즉각적으로 표출해야 풀린다." },
+        { t: "D", q: "사회적 규칙이나 법은 나 같은 상위 포식자들을 억압하기 위한 수단일 뿐이다." },
+        { t: "C", q: "나의 목표 달성을 위해서라면, 타인의 희생은 어쩔 수 없는 부수적 피해다." },
+        { t: "I", q: "지루한 일상을 견디느니, 차라리 위험한 도박을 선택하겠다." }
+    ];
+
+    // --- [Data: 8 Result Types] ---
+    // Key: D-I-C (High/Low) 조합
+    const rData = {
+        "HHH": { title: "원초적 포식자 (Apex Predator)", desc: "당신은 지배욕, 충동성, 냉담함이 모두 극도로 높습니다. 두려움이 없고 타인을 사냥감으로 봅니다. 사회적 제약이 사라진다면 가장 위험한 존재가 될 잠재력을 가졌습니다." },
+        "HHL": { title: "자기애적 폭군 (Narcissistic Tyrant)", desc: "지배욕과 충동성은 높으나 냉담함은 낮습니다. 자신을 숭배해주길 바라며, 무시당하면 불같이 화를 냅니다. 관심이 없으면 살 수 없는 유형입니다." },
+        "HLH": { title: "마키아벨리적 설계자 (The Architect)", desc: "지배욕과 냉담함이 높고 충동성은 낮습니다. 감정에 휘둘리지 않고 철저한 계산하에 타인을 장기말처럼 이용합니다. 가장 지능적인 흑막입니다." },
+        "HLL": { title: "권위적 통제자 (The Dictator)", desc: "지배욕만 높습니다. 타인을 통제하려 하지만 최소한의 선은 지킵니다. 리더십으로 포장된 독재 성향을 보입니다." },
+        "LHH": { title: "혼돈의 파괴자 (Chaos Agent)", desc: "충동적이고 냉담합니다. 계획 없이 저지르고 봅니다. '조커'와 같이 세상이 불타는 것을 즐기는 유형입니다." },
+        "LHL": { title: "충동적 반항아 (The Rebel)", desc: "충동성만 높습니다. 악의는 없으나 참을성이 없어 사고를 칩니다. 뒷일은 생각하지 않고 기분에 따라 행동합니다." },
+        "LLH": { title: "회피성 관찰자 (Detached Observer)", desc: "냉담함만 높습니다. 타인에게 해를 끼치진 않지만, 관심도 없습니다. 철저한 개인주의자로 감정 소모를 혐오합니다." },
+        "LLL": { title: "고기능성 공감자 (The Empath)", desc: "모든 어둠의 수치가 낮습니다. 당신은 이 위험한 세상에서 보기 드문 '정상인'입니다. 하지만 너무 착한 것은 약점이 될 수 있습니다." }
+    };
+
+    let step = 0;
+    let scores = { D: 0, I: 0, C: 0 };
+
+    function next(val) {
+        // 점수 기록
+        const type = qData[step].t;
+        scores[type] += val;
+
+        step++;
+        updateUI();
+    }
+
+    function updateUI() {
+        if (step < qData.length) {
+            // 퀴즈 진행 중
+            document.getElementById('q-num').innerText = `Q${step + 1} / ${qData.length}`;
+            document.getElementById('q-text').innerText = qData[step].q;
+            document.getElementById('progress').style.width = ((step / qData.length) * 100) + "%";
+        } else {
+            // 퀴즈 종료 -> 로딩 화면 호출
+            showLoading();
+        }
+    }
+
+    function showLoading() {
+        document.getElementById('quiz-box').style.display = 'none';
+        document.getElementById('loading-box').style.display = 'block';
+        
+        // 2.5초 후 결과 공개 (긴장감 조성)
+        setTimeout(() => {
+            document.getElementById('loading-box').style.display = 'none';
+            showResult();
+        }, 2500);
+    }
+
+    function showResult() {
+        document.getElementById('result-box').style.display = 'block';
+
+        // High(20점 이상) / Low 판별 로직
+        const d = scores.D >= 20 ? "H" : "L";
+        const i = scores.I >= 20 ? "H" : "L";
+        const c = scores.C >= 20 ? "H" : "L";
+        const key = d + i + c;
+
+        // 결과 매핑
+        const data = rData[key];
+        document.getElementById('result-title').innerText = data.title;
+        document.getElementById('result-desc').innerHTML = data.desc;
+
+        // 차트 그리기
+        drawChart();
+    }
+
+    function drawChart() {
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        
+        // 기존 차트가 있다면 파괴 (오류 방지)
+        if (window.myRadarChart) window.myRadarChart.destroy();
+
+        window.myRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['지배욕 (Dominance)', '충동성 (Impulse)', '냉담성 (Coldness)'],
+                datasets: [{
+                    label: 'Dark Triad Index',
+                    data: [scores.D, scores.I, scores.C],
+                    backgroundColor: 'rgba(0, 255, 65, 0.2)', // 네온 그린 배경
+                    borderColor: '#00ff41', // 네온 그린 선
+                    pointBackgroundColor: '#ff0055', // 포인트는 레드
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        angleLines: { color: '#333' },
+                        grid: { color: '#333' },
+                        pointLabels: { color: '#eee', font: {size: 12} },
+                        suggestedMin: 0,
+                        suggestedMax: 40,
+                        ticks: { display: false }
+                    }
+                },
+                plugins: { legend: { display: false } },
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    function goGame() {
+        // 나중에 게임 주소를 여기에 입력
+        alert("게임이 오픈되면 바로 접속됩니다!");
+        // window.location.href = "https://www.roblox.com/games/YOUR_GAME_ID";
+    }
+
+    function copyLink() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            alert("🔗 링크 복사 완료!\n친구에게 공유해서 본성을 확인해보세요.");
+        }).catch(err => {
+            alert("복사 실패. URL을 직접 복사해주세요.");
+        });
+    }
+
+    // 초기화
+    updateUI();
+
+</script>
+
+</body>
+</html>
