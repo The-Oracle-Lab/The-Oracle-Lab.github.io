@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="The Oracle Lab : 부(富)의 그릇 정밀 진단">
+    <meta property="og:description" content="나의 자본주의 생존 등급을 행동경제학 데이터로 분석합니다.">
+    <title>The Oracle Lab : Wealth DNA Audit</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --bg-color: #050505; --card-bg: #111; --text-main: #eee; --accent: #ffd700; /* Gold */ --danger: #ff4500; --dim: #444; }
+        * { box-sizing: border-box; }
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Noto Sans KR', sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 500px; background: var(--card-bg); padding: 30px 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; position: relative; }
+        h1 { font-size: 1.2rem; color: var(--dim); letter-spacing: 2px; margin-bottom: 40px; text-transform: uppercase; border-bottom: 1px solid var(--dim); padding-bottom: 10px; width: 100%; text-align: center; }
+        .logo-accent { color: var(--accent); font-weight: bold; }
+        #quiz-box { width: 100%; text-align: left; }
+        .progress-bar { width: 100%; height: 4px; background: #222; margin-bottom: 30px; border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s ease; box-shadow: 0 0 10px var(--accent); }
+        .q-badge { background: rgba(255, 215, 0, 0.1); color: var(--accent); padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; margin-bottom: 15px; display: inline-block; }
+        .question-text { font-size: 1.3rem; font-weight: bold; line-height: 1.5; margin-bottom: 40px; min-height: 80px; }
+        .btn { width: 100%; padding: 18px; margin-bottom: 12px; background: transparent; border: 1px solid var(--dim); color: #fff; font-size: 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-align: left; }
+        .btn:hover { border-color: var(--accent); background: rgba(255, 215, 0, 0.05); }
+        .btn:active { transform: scale(0.98); }
+        #loading-box { display: none; text-align: center; padding-top: 100px; }
+        .spinner { width: 50px; height: 50px; border: 3px solid #222; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { color: var(--accent); font-family: monospace; font-size: 0.9rem; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+        #result-box { display: none; width: 100%; text-align: center; animation: fadeIn 1s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .result-type { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin: 20px 0; text-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+        .chart-container { position: relative; height: 280px; width: 100%; margin: 20px 0; }
+        .analysis-box { background: #1a1a1a; padding: 20px; border-radius: 10px; text-align: left; margin-bottom: 30px; border-left: 4px solid var(--accent); font-size: 0.95rem; line-height: 1.6; color: #ccc; }
+        .cta-btn { background: var(--accent); color: #000; font-weight: bold; border: none; text-align: center; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); margin-top: 10px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); } }
+        .footer { margin-top: 50px; font-size: 0.7rem; color: #444; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>The <span class="logo-accent">Oracle</span> Lab</h1>
+    <div id="quiz-box">
+        <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+        <div class="q-badge" id="q-num">Q1 / 12</div>
+        <div class="question-text" id="q-text">데이터 로딩 중...</div>
+        <button class="btn" onclick="next(10)">매우 그렇다</button>
+        <button class="btn" onclick="next(5)">어느 정도 그렇다</button>
+        <button class="btn" onclick="next(0)">전혀 아니다</button>
+    </div>
+    <div id="loading-box">
+        <div class="spinner"></div>
+        <div class="loading-text">CALCULATING WEALTH DNA...<br>ANALYZING SPENDING PATTERNS...</div>
+    </div>
+    <div id="result-box">
+        <div style="font-size: 0.9rem; color:#888;">당신의 자본주의 생존 등급</div>
+        <div class="result-type" id="result-title"></div>
+        <div class="chart-container"><canvas id="radarChart"></canvas></div>
+        <div class="analysis-box" id="result-desc"></div>
+        <button class="btn cta-btn" onclick="copyLink()">🔗 결과 공유하고 '부자 등급' 비교하기</button>
+        <div style="margin-top: 20px; font-size: 0.75rem; color: #666;">* 이 데이터는 2026년 행동경제학 모델을 따릅니다.</div>
+    </div>
+    <div class="footer">© 2026 The Oracle Lab.</div>
+</div>
+<script>
+    // F: FOMO(충동), R: Risk(위험감수), L: Logic(이성/계산)
+    const qData = [
+        { t: "F", q: "스트레스를 받으면 나도 모르게 '시발비용(홧김비용)'을 쓰게 된다." },
+        { t: "R", q: "100% 확실한 100만원보다, 50% 확률의 500만원 도박을 선택하겠다." },
+        { t: "L", q: "물건을 살 때 g당 가격이나 할인율을 계산하지 않으면 찝찝하다." },
+        { t: "F", q: "'한정판'이나 '마감 임박'이라는 말을 보면 마음이 급해진다." },
+        { t: "R", q: "남들이 다 말리는 주식이나 코인에 전 재산을 태워본 적이 있다." },
+        { t: "L", q: "매달 고정지출과 변동지출을 정확하게 파악하고 기록한다." },
+        { t: "F", q: "새벽에 감성에 젖어 인터넷 쇼핑을 결제하고 아침에 후회한 적이 있다." },
+        { t: "R", q: "인생은 한 방이다. 티끌 모아봐야 티끌이다." },
+        { t: "L", q: "감정적인 호소보다는 구체적인 수치와 데이터만 믿는다." },
+        { t: "F", q: "친구가 산 물건이 좋아 보이면 당장 나도 사야 직성이 풀린다." },
+        { t: "R", q: "대출을 받아서라도 투자 기회를 잡는 것은 능력이라고 생각한다." },
+        { t: "L", q: "미래의 이득을 위해 현재의 고통(절약)을 즐겁게 감수할 수 있다." }
+    ];
+    // H: High, L: Low (F-R-L 순서)
+    const rData = {
+        "HHH": { title: "폭주하는 도박사 (The Gambler)", desc: "충동성도 높고 리스크도 즐기는데 계산까지 빠릅니다. 큰돈을 벌 수도 있지만, 한 번의 실수로 나락으로 갈 수 있는 '야수' 유형입니다. 도파민 통제가 시급합니다." },
+        "HHL": { title: "파멸적 몽상가 (The Dreamer)", desc: "충동적이고 위험을 즐기지만, 계산은 안 합니다. '언젠가 떡상하겠지'라며 돈을 뿌리고 다닙니다. 가장 위험한 '호구' 등급입니다. 당장 가계부를 쓰세요." },
+        "HLH": { title: "과시형 전략가 (The Flexer)", desc: "충동적이고 계산적입니다. 명품이나 차에는 돈을 쓰지만, 콩나물 값은 아낍니다. 남들에게 보여주기 위한 '가성비 사치'를 즐깁니다." },
+        "HLL": { title: "감정적 탕진러 (The Spender)", desc: "기분에 죽고 기분에 삽니다. 리스크는 무섭지만 자잘한 소비로 통장을 텅장으로 만듭니다. '오늘만 산다'가 인생 모토입니다." },
+        "LHH": { title: "냉철한 승부사 (The Wolf)", desc: "충동은 없는데 리스크는 걸고, 계산은 철저합니다. 워렌 버핏보다는 '헤지펀드 매니저' 스타일입니다. 부자가 될 확률이 가장 높습니다." },
+        "LHL": { title: "무모한 개미 (The Ant)", desc: "충동은 없는데 근거 없는 리스크를 집니다. 남들이 좋다는 소문에 뒤늦게 탑승했다가 물리는 전형적인 유형입니다." },
+        "LLH": { title: "자린고비 스크루지 (The Saver)", desc: "돈 쓰는 것도 싫고 잃는 것도 싫습니다. 오직 통장 잔고가 늘어나는 것에서만 쾌락을 느낍니다. 부자는 되지만 재미는 없습니다." },
+        "LLL": { title: "무욕의 평화주의자 (The Monk)", desc: "돈에 관심이 없습니다. 소비도, 투자도, 계산도 안 합니다. 자본주의 사회에서 해탈한 존재입니다. 생존을 위해 최소한의 경제 관념은 필요합니다." }
+    };
+    let step = 0; let scores = { F: 0, R: 0, L: 0 };
+    function next(val) { scores[qData[step].t] += val; step++; updateUI(); }
+    function updateUI() {
+        if (step < qData.length) {
+            document.getElementById('q-num').innerText = `Q${step + 1} / ${qData.length}`;
+            document.getElementById('q-text').innerText = qData[step].q;
+            document.getElementById('progress').style.width = ((step / qData.length) * 100) + "%";
+        } else { showLoading(); }
+    }
+    function showLoading() {
+        document.getElementById('quiz-box').style.display = 'none';
+        document.getElementById('loading-box').style.display = 'block';
+        setTimeout(() => { document.getElementById('loading-box').style.display = 'none'; showResult(); }, 2500);
+    }
+    function showResult() {
+        document.getElementById('result-box').style.display = 'block';
+        const f = scores.F >= 20 ? "H" : "L"; const r = scores.R >= 20 ? "H" : "L"; const l = scores.L >= 20 ? "H" : "L";
+        const data = rData[f + r + l];
+        document.getElementById('result-title').innerText = data.title;
+        document.getElementById('result-desc').innerHTML = data.desc;
+        drawChart();
+    }
+    function drawChart() {
+        if (window.myRadarChart) window.myRadarChart.destroy();
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        window.myRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['충동성(FOMO)', '리스크(Risk)', '이성(Logic)'],
+                datasets: [{ label: 'Wealth DNA', data: [scores.F, scores.R, scores.L], backgroundColor: 'rgba(255, 215, 0, 0.2)', borderColor: '#ffd700', pointBackgroundColor: '#fff', borderWidth: 2 }]
+            },
+            options: { scales: { r: { angleLines: { color: '#333' }, grid: { color: '#333' }, pointLabels: { color: '#eee', font: {size: 12} }, suggestedMin: 0, suggestedMax: 40, ticks: { display: false } } }, plugins: { legend: { display: false } }, maintainAspectRatio: false }
+        });
+    }
+    function copyLink() {
+        navigator.clipboard.writeText(window.location.href).then(() => { alert("🔗 링크 복사 완료!\n친구들에게 당신의 부자 등급을 자랑하세요."); });
+    }
+    updateUI();
+</script>
+</body>
+</html>
