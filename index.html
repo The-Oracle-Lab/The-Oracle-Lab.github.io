@@ -3,141 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Oracle Lab : 무의식 분석 연구소</title>
+    <title>The Oracle Lab</title>
     <style>
-        /* Design System: Cyberpunk Dark */
-        :root {
-            --bg-color: #050505;
-            --card-bg: #111;
-            --text-main: #fff;
-            --accent-dark: #ff0055; /* Dark Side Color */
-            --accent-gold: #ffd700; /* Money Color */
-            --accent-love: #ff69b4; /* Love Color */
-            --accent-ego: #00ff41;  /* Ego Color */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Noto Sans KR', sans-serif;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            justify-content: center;
+            padding: 20px;
         }
 
         h1 {
-            font-size: 1.5rem;
-            letter-spacing: 3px;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            background: linear-gradient(90deg, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 50px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeIn 1s ease-in;
         }
-
-        .subtitle { color: #666; font-size: 0.8rem; margin-bottom: 30px; }
 
         .grid-container {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
             width: 100%;
-            max-width: 400px;
         }
 
-        /* 카드 공통 디자인 */
         .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: left;
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
             position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid #222;
-            text-decoration: none; /* 링크 밑줄 제거 */
-            display: block; /* a태그를 박스로 만듦 */
-            color: inherit;
         }
 
-        .card:hover { transform: translateY(-3px); }
-        .card:active { transform: scale(0.98); }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
 
-        .card-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; display: block; }
-        .card-desc { font-size: 0.8rem; color: #888; display: block; line-height: 1.4; }
-        
         .status {
             position: absolute;
             top: 20px;
             right: 20px;
-            font-size: 0.65rem;
-            padding: 3px 6px;
-            border-radius: 4px;
-            background: #222;
-            color: #555;
+            background: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: bold;
         }
 
-        /* 4대 카테고리별 전용 스타일 */
-        
-        /* 1. Dark Side (활성화) */
-        .style-dark { border-left: 4px solid var(--accent-dark); }
-        .style-dark:hover { box-shadow: 0 0 15px rgba(255, 0, 85, 0.2); }
-        .badge-active { background: var(--accent-dark); color: #fff; }
+        .card-title {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+        }
 
-        /* 2. Money (준비중) */
-        .style-money { border-left: 4px solid var(--accent-gold); }
-        .style-money:hover { box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); }
+        .style-dark {
+            background: linear-gradient(135deg, #1e1e1e 0%, #434343 100%);
+            color: white;
+        }
 
-        /* 3. Love (준비중) */
-        .style-love { border-left: 4px solid var(--accent-love); }
-        .style-love:hover { box-shadow: 0 0 15px rgba(255, 105, 180, 0.2); }
+        .style-money {
+            background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+            color: #333;
+        }
 
-        /* 4. Ego (준비중) */
-        .style-ego { border-left: 4px solid var(--accent-ego); }
-        .style-ego:hover { box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
+        .style-love {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
 
-        .footer { margin-top: 50px; font-size: 0.7rem; color: #333; }
+        .style-ego {
+            background: linear-gradient(135deg, #8e44ad 0%, #c0392b 100%);
+            color: white;
+        }
 
+        .card div {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .card div .status {
+            background: #999;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-
-    <h1>The Oracle Lab</h1>
-    <div class="subtitle">Data-Driven Unconscious Analysis</div>
-
+    <h1>🔮 The Oracle Lab</h1>
     <div class="grid-container">
-        
         <a href="dark/index.html" class="card style-dark">
-            <span class="status badge-active">OPEN</span>
-            <span class="card-title">☠️ Dark Side Audit</span>
-            <span class="card-desc">잠재적 반사회성 & 빌런 유형 정밀 진단</span>
+            <span class="status">OPEN</span>
+            <span class="card-title">🌑 Dark Psychology</span>
         </a>
 
-        <div class="card style-money" onclick="alert('현재 데이터 모델링 중입니다. 2026년 상반기 오픈 예정.')">
-            <span class="status">SOON</span>
+        <a href="money/index.html" class="card style-money">
+            <span class="status">OPEN</span>
             <span class="card-title">💰 Wealth DNA</span>
-            <span class="card-desc">재물운 & 도파민 소비 통제력 분석</span>
+        </a>
+
+        <div class="card style-love" onclick="alert('현재 데이터 모델링 중입니다...')">
+            <span class="status">COMING SOON</span>
+            <span class="card-title">💕 Love</span>
         </div>
 
-        <div class="card style-love" onclick="alert('현재 데이터 모델링 중입니다. 2026년 상반기 오픈 예정.')">
-            <span class="status">SOON</span>
-            <span class="card-title">💘 Love & Pheromone</span>
-            <span class="card-desc">성인 애착 유형 및 생물학적 매력도</span>
+        <div class="card style-ego" onclick="alert('현재 데이터 모델링 중입니다...')">
+            <span class="status">COMING SOON</span>
+            <span class="card-title">👑 Ego</span>
         </div>
-
-        <div class="card style-ego" onclick="alert('현재 데이터 모델링 중입니다. 2026년 상반기 오픈 예정.')">
-            <span class="status">SOON</span>
-            <span class="card-title">🎭 Social Persona</span>
-            <span class="card-desc">사회적 가면 증후군 & 내면 불일치도</span>
-        </div>
-
     </div>
-
-    <div class="footer">© 2026 The Oracle Lab.</div>
-
 </body>
 </html>
