@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Oracle Lab : Dark Side Archives</title>
+    <style>
+        /* Design System: Cyberpunk Dark */
+        :root {
+            --bg-color: #050505;
+            --card-bg: #111;
+            --text-main: #eee;
+            --accent: #ff0055; /* Dark Side Red */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 헤더 디자인 */
+        .category-header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .category-title {
+            font-size: 1.8rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+            margin: 0;
+        }
+
+        .category-desc {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        /* 테스트 리스트 그리드 */
+        .test-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* 테스트 카드 디자인 */
+        .test-card {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-left: 5px solid var(--accent);
+            border-radius: 10px;
+            padding: 20px;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .test-card:hover {
+            transform: translateX(5px);
+            background: #1a1a1a;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);
+        }
+
+        .test-title { font-size: 1.1rem; font-weight: bold; display: block; margin-bottom: 5px; }
+        .test-desc { font-size: 0.8rem; color: #aaa; display: block; }
+        
+        .tag {
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            background: #222;
+            color: var(--accent);
+            border-radius: 3px;
+            margin-right: 5px;
+            border: 1px solid var(--accent);
+        }
+
+        /* 뒤로가기 버튼 */
+        .back-btn {
+            margin-top: 50px;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.8rem;
+            border: 1px solid #333;
+            padding: 10px 20px;
+            border-radius: 20px;
+            transition: 0.2s;
+        }
+        .back-btn:hover { color: #fff; border-color: #fff; }
+
+    </style>
+</head>
+<body>
+
+    <div class="category-header">
+        <div class="category-title">☠️ Dark Side</div>
+        <div class="category-desc">인간 본성의 가장 어두운 심연을 진단합니다.</div>
+    </div>
+
+    <div class="test-list">
+        
+        <a href="test1.html" class="test-card">
+            <span class="test-title"><span class="tag">HOT</span> 반사회성 스펙트럼 정밀 진단</span>
+            <span class="test-desc">나의 내면 숨겨진 지배욕, 충동성, 냉담성 3축 분석</span>
+        </a>
+
+        <div class="test-card" style="opacity: 0.5; cursor: default;" onclick="alert('제작 중입니다.')">
+            <span class="test-title"><span class="tag" style="border-color:#555; color:#555;">SOON</span> 사이코패스 vs 소시오패스</span>
+            <span class="test-desc">당신의 악의는 선천적인가, 후천적인가?</span>
+        </div>
+
+        <div class="test-card" style="opacity: 0.5; cursor: default;" onclick="alert('제작 중입니다.')">
+            <span class="test-title"><span class="tag" style="border-color:#555; color:#555;">SOON</span> 가스라이팅 가해자 지수</span>
+            <span class="test-desc">나는 무의식적으로 타인을 조종하고 있는가?</span>
+        </div>
+
+    </div>
+
+    <a href="../index.html" class="back-btn">← Main Lobby</a>
+
+</body>
+</html>
