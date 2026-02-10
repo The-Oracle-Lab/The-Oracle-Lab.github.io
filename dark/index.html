@@ -76,6 +76,8 @@
             position: relative;
             transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .test-card::before {
@@ -127,12 +129,17 @@
         }
 
         /* 텍스트 스타일 */
+        .card-content {
+            margin-top: 10px;
+        }
+
         .test-title {
             font-size: 1.4rem;
             font-weight: 700;
             margin-bottom: 8px;
             display: block;
             color: #fff;
+            padding-right: 80px; /* PC에서 뱃지 공간 확보 */
         }
 
         .test-desc {
@@ -155,6 +162,7 @@
             font-size: 0.85rem;
             transition: all 0.3s ease;
             background: transparent;
+            text-align: center;
         }
 
         .back-btn:hover {
@@ -169,11 +177,27 @@
             100% { box-shadow: 0 0 0 0 rgba(255, 0, 85, 0); }
         }
 
-        /* 모바일 최적화 */
+        /* 모바일 최적화 (수정된 부분) */
         @media (max-width: 480px) {
             .category-title { font-size: 1.8rem; }
             .test-card { padding: 25px; }
-            .test-title { font-size: 1.2rem; }
+            
+            /* 모바일에서 뱃지 위치 재조정 */
+            .status-badge {
+                position: static; /* 고정 위치 해제 */
+                display: inline-block;
+                margin-bottom: 10px; /* 제목 위로 공간 확보 */
+                align-self: flex-start; /* 왼쪽 정렬 */
+            }
+            
+            .test-title {
+                font-size: 1.3rem;
+                padding-right: 0; /* 뱃지 공간 확보 해제 */
+            }
+            
+            .card-content {
+                margin-top: 0;
+            }
         }
     </style>
 </head>
@@ -187,20 +211,26 @@
     <div class="test-list">
         <a href="test1.html" class="test-card">
             <span class="status-badge badge-active">Active Protocol</span>
-            <span class="test-title">Dark Triad Spectrum Analysis</span>
-            <span class="test-desc">나르시시즘, 마키아벨리즘, 사이코패시 성향을 정밀 진단합니다.</span>
+            <div class="card-content">
+                <span class="test-title">Dark Triad Spectrum Analysis</span>
+                <span class="test-desc">나르시시즘, 마키아벨리즘, 사이코패시 성향을 정밀 진단합니다.</span>
+            </div>
         </a>
 
         <div class="test-card" style="opacity: 0.5; cursor: not-allowed;" onclick="alert('데이터 수집 중입니다. (Access Denied)')">
             <span class="status-badge badge-soon">Locked</span>
-            <span class="test-title">Gaslighting Radar</span>
-            <span class="test-desc">당신은 조종당하고 있는가, 아니면 조종하고 있는가?</span>
+            <div class="card-content">
+                <span class="test-title">Gaslighting Radar</span>
+                <span class="test-desc">당신은 조종당하고 있는가, 아니면 조종하고 있는가?</span>
+            </div>
         </div>
 
         <div class="test-card" style="opacity: 0.5; cursor: not-allowed;" onclick="alert('데이터 수집 중입니다. (Access Denied)')">
             <span class="status-badge badge-soon">Locked</span>
-            <span class="test-title">Social Mask Index</span>
-            <span class="test-desc">타인이 보는 당신 vs 실제 당신의 괴리율 분석</span>
+            <div class="card-content">
+                <span class="test-title">Social Mask Index</span>
+                <span class="test-desc">타인이 보는 당신 vs 실제 당신의 괴리율 분석</span>
+            </div>
         </div>
     </div>
     
