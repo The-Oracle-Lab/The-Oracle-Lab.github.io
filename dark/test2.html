@@ -12,24 +12,22 @@
             --bg-color: #020b05;
             --primary-color: #00ff41; /* 초기: 녹색 */
             --secondary-color: #0a5c2b;
-            --scan-speed: 4s; /* 초기: 느림 */
-            --glitch-opacity: 0;
+            --alert-color: transparent;
+            --scan-speed: 3s;
+            --glitch-intensity: 0px;
+            --shake-intensity: 0px;
         }
 
-        /* --- [PHASE STYLES: 단계별 변화] --- */
-        /* Phase 2: 불안 (Q6~Q10) */
-        body.phase-2 {
-            --primary-color: #ffaa00; /* 오렌지 */
-            --secondary-color: #5c3a0a;
-            --scan-speed: 2s; /* 빨라짐 */
-        }
-        /* Phase 3: 위험 (Q11~Q15) */
-        body.phase-3 {
-            --bg-color: #0d0000;
-            --primary-color: #ff003c; /* 레드 */
-            --secondary-color: #5c0016;
-            --scan-speed: 0.8s; /* 매우 빠름 */
-        }
+        /* --- [STATE STYLES: 9단계 변화] --- */
+        /* 단계별 색상 및 애니메이션 속도 조절 */
+        body.state-2 { --primary-color: #adff2f; }
+        body.state-3 { --primary-color: #ffff00; --scan-speed: 2.5s; }
+        body.state-4 { --primary-color: #ffcc00; --alert-color: #ffff00; }
+        body.state-5 { --primary-color: #ff9900; --alert-color: #ff9900; --scan-speed: 2s; }
+        body.state-6 { --primary-color: #ff6600; --alert-color: #ff5500; --glitch-intensity: 2px; }
+        body.state-7 { --primary-color: #ff3300; --alert-color: #ff0000; --shake-intensity: 2px; --scan-speed: 1.5s; }
+        body.state-8 { --bg-color: #1a0000; --primary-color: #ff0000; --alert-color: #ff0000; --shake-intensity: 4px; --scan-speed: 1s; animation: strobe 1s infinite; }
+        body.state-9 { --bg-color: #000000; --primary-color: #ff0055; --alert-color: #ff0055; --shake-intensity: 6px; --scan-speed: 0.5s; --glitch-intensity: 5px; }
 
         /* --- [BASE STYLES] --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,315 +42,283 @@
             flex-direction: column;
             align-items: center;
             overflow-x: hidden;
-            transition: background-color 1s ease, color 1s ease; /* 부드러운 전환 */
+            transition: all 0.5s ease;
         }
 
-        /* CRT 스캔라인 */
+        .screen-fx {
+            width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center;
+            animation: shake-screen 0.5s infinite paused;
+        }
+        body[class*="state-7"] .screen-fx, body[class*="state-8"] .screen-fx, body[class*="state-9"] .screen-fx {
+            animation-play-state: running;
+        }
+
         body::after {
             content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.3) 3px);
-            pointer-events: none; z-index: 90;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.2) 3px);
+            pointer-events: none; z-index: 99;
         }
 
-        /* 글리치 오버레이 (화면 깨짐 효과용) */
-        .glitch-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--primary-color);
-            opacity: var(--glitch-opacity);
-            pointer-events: none; z-index: 100;
-            mix-blend-mode: exclusion;
-        }
-
-        /* --- [LAYOUT] --- */
-        .header { text-align: center; margin-bottom: 20px; z-index: 10; }
-        .title { font-size: 1.8rem; letter-spacing: 3px; text-shadow: 0 0 10px var(--primary-color); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .title { font-size: 1.8rem; letter-spacing: 3px; text-shadow: 0 0 15px var(--primary-color); }
         .status { font-size: 0.9rem; opacity: 0.8; margin-top: 5px; }
 
-        /* 레이더 */
         .radar-scope {
-            width: 240px; height: 240px;
-            border: 2px solid var(--primary-color);
+            width: 260px; height: 260px;
+            border: 3px solid var(--primary-color);
             border-radius: 50%; position: relative;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             background: 
                 radial-gradient(circle, transparent 60%, var(--secondary-color) 61%),
                 linear-gradient(var(--secondary-color) 1px, transparent 1px),
                 linear-gradient(90deg, var(--secondary-color) 1px, transparent 1px);
             background-size: 100% 100%, 40px 40px, 40px 40px;
-            box-shadow: 0 0 30px var(--secondary-color);
-            transition: all 0.5s ease;
+            box-shadow: 0 0 30px var(--primary-color), inset 0 0 20px var(--primary-color);
+            overflow: hidden;
         }
 
         .radar-sweep {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             border-radius: 50%;
             background: conic-gradient(from 0deg, transparent 270deg, var(--primary-color));
-            opacity: 0.3;
+            opacity: 0.4;
             animation: sweep var(--scan-speed) linear infinite;
             border-right: 2px solid var(--primary-color);
         }
 
-        /* 질문 박스 */
+        .alert-blip {
+            position: absolute; width: 12px; height: 12px; border-radius: 50%;
+            background: var(--alert-color);
+            box-shadow: 0 0 15px var(--alert-color);
+            opacity: 0;
+            animation: pulse-blip 2s infinite;
+        }
+
         .data-terminal {
-            width: 100%; max-width: 500px;
+            width: 100%; background: rgba(0, 10, 5, 0.8);
             border: 2px solid var(--primary-color);
-            background: rgba(0, 5, 2, 0.8);
             padding: 25px; position: relative;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
-            transition: border-color 0.5s ease;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
-
         .terminal-header {
-            position: absolute; top: -12px; left: 20px;
-            background: var(--bg-color); padding: 0 10px;
-            color: var(--primary-color); font-weight: bold; font-size: 0.8rem;
-            transition: all 0.5s ease;
+             position: absolute; top: -12px; left: 20px; background: var(--bg-color);
+             padding: 0 10px; color: var(--primary-color); font-weight: bold;
+             transition: all 0.5s ease;
         }
+        .q-text { font-family: 'Inter', sans-serif; font-size: 1.2rem; line-height: 1.5; margin-bottom: 30px; color: #eee; }
 
-        .q-text {
-            font-family: 'Inter', sans-serif; font-size: 1.15rem; line-height: 1.5;
-            margin-bottom: 25px; color: #eee; min-height: 3.6em; /* 높이 고정으로 덜컥거림 방지 */
-        }
-        
-        /* 타이핑 커서 효과 */
-        .cursor {
-            display: inline-block; width: 8px; height: 18px;
-            background-color: var(--primary-color);
-            animation: blink 1s infinite; vertical-align: middle;
-        }
-
-        /* 버튼 */
         .option-btn {
             display: block; width: 100%; padding: 15px; margin-bottom: 10px;
             background: transparent; border: 1px solid var(--secondary-color);
             color: var(--primary-color); text-align: left; cursor: pointer;
             font-family: 'Share Tech Mono', monospace; font-size: 1rem;
-            transition: 0.2s; position: relative; overflow: hidden;
+            transition: 0.3s;
         }
+        .option-btn:hover { background: var(--secondary-color); box-shadow: 0 0 15px var(--secondary-color); }
+        .option-btn.selected { background: var(--primary-color); color: var(--bg-color); font-weight: bold; }
 
-        .option-btn:hover {
-            background: var(--secondary-color);
-            box-shadow: 0 0 10px var(--secondary-color);
-            transform: translateX(5px);
-        }
-
-        .option-btn:active {
-            background: var(--primary-color); color: #000;
-        }
-
-        /* 결과 화면 */
-        .result-section { display: none; text-align: center; width: 100%; max-width: 600px; }
-        .hazard-level { font-size: 2.5rem; font-weight: bold; margin: 20px 0; text-shadow: 0 0 20px currentColor; }
-        .result-meter { width: 100%; height: 20px; border: 1px solid var(--primary-color); margin: 20px 0; background: #000; }
-        .result-fill { height: 100%; width: 0%; background: var(--primary-color); transition: width 1s ease; }
+        .result-terminal { display: none; text-align: center; }
+        .hazard-level-text { font-size: 2.5rem; font-weight: bold; margin: 20px 0; text-shadow: 0 0 20px var(--primary-color); line-height: 1.2; }
         
+        .threat-meter { width: 100%; height: 25px; background: #111; border: 2px solid var(--primary-color); margin: 30px 0; position: relative; overflow: hidden; }
+        .threat-fill { height: 100%; background: linear-gradient(90deg, #00ff41, #ffff00, #ff0000); width: 0%; transition: width 1.5s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        
+        .result-desc-box { text-align: left; border-top: 2px dashed var(--primary-color); padding-top: 20px; }
+        .result-desc { font-family: 'Inter', sans-serif; color: #ccc; line-height: 1.6; margin-bottom: 15px; }
+
+        .action-group { display: flex; gap: 10px; justify-content: center; margin-top: 40px; }
         .action-btn {
-            display: inline-block; margin-top: 30px; padding: 12px 30px;
-            border: 1px solid var(--primary-color); color: var(--primary-color);
-            text-decoration: none; font-weight: bold; transition: 0.3s;
+            display: inline-block; padding: 12px 20px;
+            border: 2px solid var(--primary-color); color: var(--primary-color);
+            text-decoration: none; font-weight: bold; letter-spacing: 1px;
+            transition: 0.3s; background: transparent; cursor: pointer;
+            font-family: 'Share Tech Mono', monospace; font-size: 1rem;
         }
-        .action-btn:hover { background: var(--primary-color); color: #000; }
+        .action-btn:hover { background: var(--primary-color); color: var(--bg-color); box-shadow: 0 0 20px var(--primary-color); }
 
-        /* --- [ANIMATIONS] --- */
+        .share-btn { border-color: #fff; color: #fff; }
+        .share-btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px #fff; }
+
         @keyframes sweep { to { transform: rotate(360deg); } }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        
-        /* 화면 지지직 효과 */
-        @keyframes noise {
-            0% { transform: translate(0,0); }
-            20% { transform: translate(-5px, 5px); }
-            40% { transform: translate(5px, -5px); }
-            60% { transform: translate(-5px, 0); }
-            80% { transform: translate(5px, 0); }
-            100% { transform: translate(0,0); }
+        @keyframes pulse-blip { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1.2); } }
+        @keyframes strobe { 0%, 100% { background-color: var(--bg-color); } 50% { background-color: #330000; } }
+        @keyframes shake-screen {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(calc(var(--shake-intensity) * -1), var(--shake-intensity)); filter: hue-rotate(0deg); }
+            40% { transform: translate(var(--shake-intensity), calc(var(--shake-intensity) * -1)); filter: hue-rotate(var(--glitch-intensity)); }
+            60% { transform: translate(calc(var(--shake-intensity) * -1), 0); }
+            80% { transform: translate(var(--shake-intensity), var(--shake-intensity)); filter: hue-rotate(calc(var(--glitch-intensity) * -1)); }
+            100% { transform: translate(0, 0); }
         }
 
-        .shake-screen { animation: noise 0.3s linear; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="glitch-overlay" id="glitchLayer"></div>
+    <div class="screen-fx">
+        <div class="header">
+            <div class="title">GASLIGHT_RADAR</div>
+            <div class="status" id="systemStatus">SYSTEM STATUS: ACTIVE SCANNING...</div>
+        </div>
 
-    <div class="header">
-        <div class="title">GASLIGHT_RADAR</div>
-        <div class="status" id="sysStatus">SYSTEM STATUS: NORMAL</div>
-    </div>
+        <div class="radar-scope">
+            <div class="radar-sweep"></div>
+            <div class="alert-blip" style="top: 25%; left: 35%; animation-delay: 0s;"></div>
+            <div class="alert-blip" style="top: 65%; right: 25%; animation-delay: 0.7s;"></div>
+            <div class="alert-blip" style="bottom: 30%; left: 45%; animation-delay: 1.5s;"></div>
+        </div>
 
-    <div class="radar-scope">
-        <div class="radar-sweep"></div>
-    </div>
+        <div id="quizSection" class="data-terminal">
+            <div class="terminal-header" id="questionProgress">INPUT_SEQUENCE_01/15</div>
+            <div class="q-text" id="qText"></div>
+            <div id="optionsContainer"></div>
+        </div>
 
-    <div id="quizSection" class="data-terminal">
-        <div class="terminal-header" id="qProgress">SEQ_01</div>
-        <div class="q-text"><span id="typeTarget"></span><span class="cursor"></span></div>
-        <div id="optionsContainer"></div>
-    </div>
-
-    <div id="resultSection" class="result-section">
-        <div class="data-terminal" style="text-align: center;">
-            <div class="terminal-header">FINAL_REPORT</div>
-            <div>TOXICITY DETECTED:</div>
-            <div class="hazard-level" id="resultTitle"></div>
+        <div id="resultSection" class="data-terminal result-terminal">
+            <div class="terminal-header">SCAN_COMPLETE_REPORT</div>
+            <div>THREAT DETECTION LEVEL:</div>
+            <div class="hazard-level-text" id="hazardText"></div>
             
-            <div class="result-meter">
-                <div class="result-fill" id="resultBar"></div>
+            <div class="threat-meter">
+                <div class="threat-fill" id="meterFill"></div>
             </div>
 
-            <p id="resultDesc" style="color: #ccc; line-height: 1.6; margin-bottom: 20px; text-align: left;"></p>
-            
-            <a href="index.html" class="action-btn">EXIT RADAR</a>
+            <div class="result-desc-box">
+                <div class="result-desc" id="mainDesc"></div>
+                <div class="result-desc" id="subDesc" style="color: var(--primary-color); font-weight: bold; margin-top: 20px;"></div>
+            </div>
+
+            <div class="action-group">
+                <button class="action-btn share-btn" onclick="shareResult()">[ BROADCAST ALERT ]</button>
+                <a href="index.html" class="action-btn">DISENGAGE (LOBBY)</a>
+            </div>
         </div>
     </div>
 
     <script>
         const questions = [
-            // Phase 1: 안정 (Green)
-            { t: "그 사람과 대화 후, '내가 예민한가?'라고 자주 자책한다.", w: 2 },
-            { t: "증거가 있어도 그들은 '네 기억이 틀렸다'고 우긴다.", w: 3 },
-            { t: "싸우고 나면 사과하는 건 항상 나다.", w: 2 },
-            { t: "주변 사람들에게 그 사람의 행동을 변명해준다.", w: 2 },
-            { t: "농담이라며 내 외모나 능력을 깎아내린다.", w: 2 },
-            
-            // Phase 2: 불안 (Orange) - 질문 강도 상승
-            { t: "사소한 결정도 그 사람의 허락을 구하게 된다.", w: 3 },
-            { t: "화를 내다가도 갑자기 다정해져서 나를 헷갈리게 한다.", w: 3 },
-            { t: "내 감정이 '비정상'이라는 말을 듣는다.", w: 3 },
-            { t: "그 사람이 없으면 아무것도 못할 것 같은 두려움이 든다.", w: 3 },
-            { t: "만나기 전보다 자존감이 현저히 떨어졌다.", w: 2 },
-
-            // Phase 3: 공포 (Red) - 심각한 징후
-            { t: "그들은 잘못을 인정하지 않고 오히려 나를 비난한다.", w: 3 },
-            { t: "나의 성취를 별것 아닌 것처럼 무시한다.", w: 1 },
-            { t: "함께 있을 때 항상 살얼음판을 걷는 기분이다.", w: 2 },
-            { t: "내 친구나 가족과 만나는 것을 교묘하게 방해한다.", w: 3 },
-            { t: "예전의 내 모습이 기억나지 않는다.", w: 3 }
+            { t: "그 사람과 대화 후, '내가 너무 예민한가?'라고 스스로 의심한 적이 자주 있다.", w: 2 },
+            { t: "명백한 증거를 들이대도 그들은 '네 기억이 틀렸다'고 단호하게 부정한다.", w: 3 },
+            { t: "갈등 상황에서 결국 사과하는 것은 항상 나 자신이다.", w: 2 },
+            { t: "주변 사람들에게 그 사람의 무례한 행동을 변명하거나 좋게 포장해준다.", w: 2 },
+            { t: "그들은 '농담'이라며 내 외모, 능력, 성격을 깎아내리는 말을 한다.", w: 2 },
+            { t: "사소한 결정조차 내리기 두려워 그 사람의 허락이나 의견을 구한다.", w: 3 },
+            { t: "그 사람은 나에게 끔찍하게 화를 냈다가도 금방 다정해져서 나를 혼란스럽게 한다.", w: 3 },
+            { t: "내가 느끼는 감정에 대해 '비정상적'이라거나 '과민반응'이라는 말을 듣는다.", w: 3 },
+            { t: "그 사람이 없으면 나 혼자서는 아무것도 못할 것 같은 불안감을 느낀다.", w: 3 },
+            { t: "그 사람을 만나기 전보다 나의 자신감과 자존감이 현저히 낮아졌다.", w: 2 },
+            { t: "그들은 자신의 잘못을 인정하는 대신, 내가 그들을 화나게 만들었다고 비난한다.", w: 3 },
+            { t: "나의 성공이나 성취를 별것 아닌 것처럼 무시하거나 깎아내린다.", w: 1 },
+            { t: "그들과 함께 있을 때 나는 항상 긴장 상태이며, 살얼음판을 걷는 기분이다.", w: 2 },
+            { t: "그들은 내가 좋아하는 친구나 가족들과 만나는 것을 교묘하게 방해하거나 싫어한다.", w: 3 },
+            { t: "나는 예전의 활기차고 즐거웠던 내 모습이 기억나지 않는다.", w: 3 }
         ];
 
         let currentQ = 0;
         let totalScore = 0;
-        const maxScore = questions.reduce((sum, q) => sum + q.w, 0);
+        const maxPossibleScore = questions.reduce((sum, q) => sum + q.w, 0);
+        let finalShareText = ""; // 동적 공유 텍스트
 
-        // 타이핑 효과 변수
-        let typeInterval;
-        
         function init() { loadQuestion(); }
 
         function loadQuestion() {
-            // 1. 단계별 테마 변경 (Phase Shift)
-            const body = document.body;
-            const status = document.getElementById('sysStatus');
-            
-            if (currentQ >= 10) { // Phase 3
-                body.className = 'phase-3';
-                status.innerText = "WARNING: CRITICAL THREAT DETECTED";
-                status.style.color = "#ff003c";
-            } else if (currentQ >= 5) { // Phase 2
-                body.className = 'phase-2';
-                status.innerText = "CAUTION: UNSTABLE SIGNAL";
-                status.style.color = "#ffaa00";
-            } else { // Phase 1
-                body.className = '';
-                status.innerText = "SYSTEM STATUS: NORMAL SCAN";
-            }
-
-            // 2. UI 업데이트
             const q = questions[currentQ];
-            document.getElementById('qProgress').innerText = `SEQ_${String(currentQ + 1).padStart(2, '0')}/${questions.length}`;
+            document.getElementById('questionProgress').innerText = `INPUT_SEQUENCE_${String(currentQ + 1).padStart(2, '0')}/${questions.length}`;
+            document.getElementById('qText').innerText = q.t;
             
-            // 3. 타이핑 효과 시작
-            typeText(q.t);
-
-            // 4. 옵션 생성
             const container = document.getElementById('optionsContainer');
             container.innerHTML = '';
-            
+
             const opts = [
-                { text: "[ YES ] :: 그렇다", val: q.w },
-                { text: "[ NO ]  :: 아니다", val: 0 }
+                { text: "[ YES ] 그렇다. 자주 경험한다.", val: q.w },
+                { text: "[ NO ] 아니다. 거의 경험하지 않는다.", val: 0 }
             ];
 
             opts.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.innerText = opt.text;
-                btn.onclick = () => handleInput(opt.val);
+                btn.onclick = () => selectOption(opt.val, btn);
                 container.appendChild(btn);
             });
         }
 
-        // 텍스트 한 글자씩 출력하는 함수
-        function typeText(text) {
-            const target = document.getElementById('typeTarget');
-            target.innerText = ""; // 초기화
-            clearInterval(typeInterval); // 기존 타이핑 중단
-
-            let i = 0;
-            // 단계가 높을수록 타이핑 속도도 빨라짐 (긴박감)
-            let speed = currentQ >= 10 ? 15 : (currentQ >= 5 ? 25 : 35);
-
-            typeInterval = setInterval(() => {
-                target.innerText += text.charAt(i);
-                i++;
-                if (i > text.length) clearInterval(typeInterval);
-            }, speed);
-        }
-
-        // 버튼 클릭 시 효과 (노이즈 + 화면 흔들림)
-        function handleInput(val) {
+        function selectOption(val, btn) {
             totalScore += val;
-            
-            // 효과 1: 글리치 플래시 (화면 번쩍임)
-            const glitch = document.getElementById('glitchLayer');
-            glitch.style.opacity = currentQ >= 10 ? 0.8 : (currentQ >= 5 ? 0.4 : 0.1);
-            
-            // 효과 2: 화면 흔들림
-            document.body.classList.add('shake-screen');
-
-            // 딜레이 후 복구 및 다음 문제
+            btn.classList.add('selected');
             setTimeout(() => {
-                glitch.style.opacity = 0;
-                document.body.classList.remove('shake-screen');
-                
                 currentQ++;
-                if (currentQ < questions.length) loadQuestion();
-                else showResult();
-            }, 300); // 0.3초 딜레이 (효과 보여주는 시간)
+                if (currentQ < questions.length) {
+                    loadQuestion();
+                } else {
+                    calculateAndShowResult();
+                }
+            }, 400);
         }
 
-        function showResult() {
+        function calculateAndShowResult() {
             document.getElementById('quizSection').classList.add('hidden');
             document.getElementById('resultSection').style.display = 'block';
-            document.body.className = ''; // 배경 초기화 혹은 결과 전용 테마 적용 가능
+            document.getElementById('systemStatus').innerText = "SYSTEM STATUS: THREAT IDENTIFIED";
 
-            const percent = Math.round((totalScore / maxScore) * 100);
+            const percentage = Math.round((totalScore / maxPossibleScore) * 100);
             
-            const title = document.getElementById('resultTitle');
-            const desc = document.getElementById('resultDesc');
-            const bar = document.getElementById('resultBar');
-            
-            // 결과 데이터
-            let rData = {};
-            if (percent <= 20) {
-                rData = { t: "SAFE ZONE", c: "#00ff41", d: "안전합니다. 당신의 관계는 건강하며 현실 감각이 명확합니다." };
-            } else if (percent <= 50) {
-                rData = { t: "CAUTION", c: "#ffaa00", d: "주의가 필요합니다. 미세한 가스라이팅 신호가 잡힙니다." };
-            } else if (percent <= 80) {
-                rData = { t: "DANGER", c: "#ff5500", d: "위험합니다. 당신의 현실 감각이 왜곡되고 있습니다. 판단력이 흐려졌습니다." };
-            } else {
-                rData = { t: "CRITICAL", c: "#ff003c", d: "매우 위험. 심각한 가스라이팅 상태입니다. 즉시 탈출하세요." };
-            }
+            let stateLevel = 1;
+            if (percentage > 90) stateLevel = 9;
+            else if (percentage > 80) stateLevel = 8;
+            else if (percentage > 70) stateLevel = 7;
+            else if (percentage > 60) stateLevel = 6;
+            else if (percentage > 50) stateLevel = 5;
+            else if (percentage > 40) stateLevel = 4;
+            else if (percentage > 30) stateLevel = 3;
+            else if (percentage > 15) stateLevel = 2;
+            else stateLevel = 1;
 
-            title.innerText = rData.t;
-            title.style.color = rData.c;
-            desc.innerText = rData.d;
-            
-            // 게이지바 채우기
+            document.body.className = `state-${stateLevel}`;
+
             setTimeout(() => {
-                bar.style.width = percent + '%';
-                bar.style.backgroundColor = rData.c;
-            }, 100);
+                document.getElementById('meterFill').style.width = `${percentage}%`;
+            }, 300);
+
+            const results = {
+                1: { h: "CLEAR HORIZON (안전)", m: "감지된 위협이 없습니다. 당신의 현실 감각은 건강합니다.", s: "현재의 건강한 경계선을 유지하세요." },
+                2: { h: "MINOR STATIC (경미한 잡음)", m: "미세한 간섭 신호가 잡힙니다. 심각한 수준은 아닙니다.", s: "불편한 상황에서 명확하게 의사를 표현하세요." },
+                3: { h: "DISTORTED SIGNAL (신호 왜곡)", m: "상대방이 당신의 판단력을 흐리게 만드는 빈도가 늘어나고 있습니다.", s: "대화 내용을 기록하여 객관적 사실을 확인하세요." },
+                4: { h: "THE DOUBT CREEP (의심의 싹)", m: "스스로에 대한 의심이 싹트기 시작했습니다.", s: "신뢰할 수 있는 제3자에게 조언을 구하세요." },
+                5: { h: "MODERATE FOG (중등도 안개)", m: "당신의 현실 인식이 안개처럼 흐려지고 있습니다.", s: "'아니오'라고 말하는 것에 죄책감을 느끼지 마세요." },
+                6: { h: "REALITY EROSION (현실 침식)", m: "자존감이 무너지고 현실 감각이 침식당하고 있습니다.", s: "상대방과의 심리적 거리를 두는 것이 시급합니다." },
+                7: { h: "RED ALERT (적색 경보)", m: "매우 위험합니다. 상대방이 당신의 현실을 통제하고 있습니다.", s: "즉각적인 개입이 필요합니다. 안전한 이별을 준비하세요." },
+                8: { h: "CRITICAL FAILURE (치명적 오류)", m: "시스템 붕괴 직전. 이 관계는 당신을 파괴하고 있습니다.", s: "비상사태입니다. 탈출 전략을 실행하세요." },
+                9: { h: "TOTAL SUBJUGATION (완전 예속)", m: "현실이 완전히 상대방에게 지배당했습니다.", s: "생존을 위해 모든 수단을 동원하여 탈출하세요." }
+            };
+
+            const data = results[stateLevel];
+            document.getElementById('hazardText').innerText = data.h;
+            document.getElementById('mainDesc').innerText = data.m;
+            document.getElementById('subDesc').innerText = ">>> ACTION REQUIRED: " + data.s;
+
+            // ★ 동적 공유 멘트 생성 (핵심) ★
+            finalShareText = `[ 📡 GASLIGHT RADAR REPORT ]\n⚠️ THREAT LEVEL: ${data.h}\n\n"${data.m}"\n\n>>> ADVICE: ${data.s}\n\n내 관계의 독성 레벨 확인하기 ▼\nhttps://the-oracle-lab.github.io/dark/test2.html`;
+        }
+
+        // 공유 기능
+        function shareResult() {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(finalShareText).then(() => {
+                    alert("TRANSMISSION SENT.\n(결과가 복사되었습니다. 연구소에 전송하세요.)");
+                }).catch(() => {
+                    alert("ACCESS DENIED (Clipboard Error)");
+                });
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = finalShareText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert("TRANSMISSION SENT.\n(결과가 복사되었습니다.)");
+            }
         }
 
         init();
