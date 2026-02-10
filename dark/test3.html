@@ -11,6 +11,7 @@
             --bg-color: #050510;
             --primary-color: #7b2cbf; /* Cyber Violet */
             --accent-color: #00f2ff; /* Cyan Scanner */
+            --danger-color: #ff0055; /* Pain Color */
             --text-color: #e0e0ff;
             --grid-color: rgba(123, 44, 191, 0.2);
         }
@@ -35,23 +36,38 @@
 
         /* --- UI COMPONENTS --- */
         .scanner-frame {
-            position: relative; width: 200px; height: 200px;
+            position: relative; width: 220px; height: 220px;
             border: 2px solid var(--primary-color); margin: 20px auto;
             background: rgba(10, 10, 30, 0.6); overflow: hidden;
-            box-shadow: 0 0 20px rgba(123, 44, 191, 0.3);
-            border-radius: 50%; /* 원형 스캐너 */
+            box-shadow: 0 0 25px rgba(123, 44, 191, 0.4);
+            border-radius: 50%;
+            transition: all 0.5s ease;
         }
         
         .scan-grid {
             position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
             background: radial-gradient(circle, transparent 20%, var(--primary-color) 21%, transparent 22%);
             background-size: 40px 40px;
-            animation: rotateGrid 10s linear infinite; opacity: 0.3;
+            animation: rotateGrid 12s linear infinite; opacity: 0.2;
+        }
+
+        .face-container {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 150px; height: 180px;
         }
 
         .face-wireframe {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 140px; opacity: 0.8; transition: all 0.5s ease;
+            width: 100%; height: 100%;
+            opacity: 0.8; transition: all 0.5s ease;
+            filter: drop-shadow(0 0 5px var(--accent-color));
+        }
+
+        .crack-line {
+            opacity: 0;
+            stroke: var(--danger-color) !important;
+            stroke-width: 1.5 !important;
+            transition: opacity 0.8s ease-in-out;
+            filter: drop-shadow(0 0 8px var(--danger-color));
         }
 
         .header { text-align: center; margin-bottom: 20px; z-index: 10; }
@@ -91,7 +107,6 @@
         .tag { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; border: 1px solid #555; color: #aaa; background: rgba(0,0,0,0.3); }
         .tag.high { border-color: var(--accent-color); color: var(--accent-color); }
         
-        /* 3-Axis Chart */
         .axis-chart { margin: 30px 0; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; }
         .bar-row { display: flex; align-items: center; margin-bottom: 12px; }
         .bar-label { width: 80px; font-size: 0.8rem; text-align: left; color: #aaa; }
@@ -103,16 +118,31 @@
         .desc-text { font-size: 0.95rem; line-height: 1.6; color: #ddd; margin-bottom: 15px; }
         .advice-text { font-size: 0.9rem; color: var(--accent-color); font-weight: bold; }
 
+        /* 액션 버튼 그룹 */
+        .action-group {
+            display: flex; gap: 10px; justify-content: center; margin-top: 40px;
+        }
+
         .action-btn {
-            display: inline-block; margin-top: 40px; padding: 15px 40px;
+            display: inline-block; padding: 15px 30px;
             background: var(--primary-color); color: #fff; text-decoration: none;
             font-weight: bold; border-radius: 50px; transition: 0.3s;
+            border: none; cursor: pointer; font-size: 1rem;
+            font-family: 'Noto Sans KR', sans-serif;
         }
         .action-btn:hover { box-shadow: 0 0 30px var(--primary-color); transform: scale(1.05); }
 
+        .share-btn {
+            background: transparent; border: 2px solid var(--accent-color); color: var(--accent-color);
+        }
+        .share-btn:hover { background: var(--accent-color); color: #000; box-shadow: 0 0 30px var(--accent-color); }
+
         @keyframes rotateGrid { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-3px, 3px); } 40% { transform: translate(3px, -3px); } 100% { transform: translate(0); } }
-        .glitch-effect { animation: glitch 0.2s 2; filter: hue-rotate(90deg); }
+        @keyframes glitch-mild { 0% { transform: translate(0); } 20% { transform: translate(-2px, 1px); } 100% { transform: translate(0); } }
+        @keyframes damage-shake { 0% { transform: translate(0); filter: hue-rotate(0deg); } 20% { transform: translate(-4px, 4px); filter: hue-rotate(-90deg); } 100% { transform: translate(0); } }
+
+        .glitch-effect { animation: glitch-mild 0.3s linear; }
+        .damage-effect { animation: damage-shake 0.5s linear; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -123,15 +153,26 @@
         <div class="subtitle">3-AXIS PERSONA DIAGNOSIS</div>
     </div>
 
-    <div class="scanner-frame" id="scanner">
+    <div class="scanner-frame" id="scannerBox">
         <div class="scan-grid"></div>
-        <svg class="face-wireframe" id="faceIcon" viewBox="0 0 100 120">
-            <path d="M20,40 Q20,10 50,10 Q80,10 80,40 V70 Q80,100 50,100 Q20,100 20,70 Z" fill="none" stroke="#00f2ff" stroke-width="0.8"/>
-            <path d="M30,45 Q40,40 50,45 Q60,40 70,45" fill="none" stroke="#00f2ff" stroke-width="0.8"/>
-            <circle cx="35" cy="50" r="1.5" fill="#00f2ff"/>
-            <circle cx="65" cy="50" r="1.5" fill="#00f2ff"/>
-            <path d="M40,80 Q50,90 60,80" fill="none" stroke="#00f2ff" stroke-width="0.8"/>
-        </svg>
+        <div class="face-container" id="faceContainer">
+            <svg class="face-wireframe" viewBox="0 0 100 120">
+                <g id="baseFace">
+                    <path d="M20,40 Q20,10 50,10 Q80,10 80,40 V70 Q80,100 50,100 Q20,100 20,70 Z" fill="none" stroke="#00f2ff" stroke-width="0.8"/>
+                    <path d="M30,45 Q40,40 50,45 Q60,40 70,45" fill="none" stroke="#00f2ff" stroke-width="0.8"/>
+                    <circle cx="35" cy="50" r="1.5" fill="#00f2ff"/>
+                    <circle cx="65" cy="50" r="1.5" fill="#00f2ff"/>
+                    <path d="M40,80 Q50,90 60,80" fill="none" stroke="#00f2ff" stroke-width="0.8"/>
+                </g>
+                <g id="cracksGroup">
+                    <path id="crack1" class="crack-line" d="M50,10 L45,25 L55,35" fill="none"/>
+                    <path id="crack2" class="crack-line" d="M20,70 L35,65 L40,75" fill="none"/>
+                    <path id="crack3" class="crack-line" d="M80,40 L65,45 L70,55" fill="none"/>
+                    <path id="crack4" class="crack-line" d="M35,50 L25,55 M65,50 L75,55" fill="none"/>
+                    <path id="crack5" class="crack-line" d="M50,100 L40,85 L60,85 L50,75" fill="none"/>
+                </g>
+            </svg>
+        </div>
     </div>
 
     <div id="quizSection" class="question-panel">
@@ -144,8 +185,7 @@
         <div class="subtitle">DIAGNOSIS COMPLETE</div>
         <div class="archetype-title" id="resultTitle"></div>
         
-        <div class="tag-container" id="tagContainer">
-            </div>
+        <div class="tag-container" id="tagContainer"></div>
 
         <div class="axis-chart">
             <div class="bar-row">
@@ -170,55 +210,31 @@
             <div class="advice-text" id="resultAdvice"></div>
         </div>
 
-        <a href="index.html" class="action-btn">RETURN TO LOBBY</a>
+        <div class="action-group">
+            <button class="action-btn share-btn" onclick="shareResult()">[ EXPORT DATA ]</button>
+            <a href="index.html" class="action-btn">RETURN TO LOBBY</a>
+        </div>
     </div>
 
     <script>
-        // 3가지 축:
-        // A: Masking Skill (연기력) - 높을수록 사회적 적응력 높음
-        // B: Inner Pain (고통) - 높을수록 스트레스/부조화 심함
-        // C: Identity Loss (상실) - 높을수록 자아 흐릿함
-        
         let scores = { A: 0, B: 0, C: 0 };
         let currentQ = 0;
+        let painStack = 0;
+        let finalShareText = ""; // 공유 텍스트 저장용 변수
 
         const questions = [
-            // Q1 (A)
-            { t: "마음에 들지 않는 사람과도 30분 이상 즐겁게 대화할 수 있다.", 
-              o: [{t:"식은 죽 먹기다.", s:{A:2,B:0,C:0}}, {t:"가능은 하지만 피곤하다.", s:{A:1,B:1,C:0}}, {t:"표정에 다 드러나서 불가능하다.", s:{A:0,B:0,C:0}}] },
-            // Q2 (B)
-            { t: "사람들과 어울리고 집에 돌아오면 가면을 찢어버리고 싶은 충동을 느낀다.", 
-              o: [{t:"자주 느낀다. 끔찍하다.", s:{A:0,B:2,C:0}}, {t:"가끔 피곤할 때만.", s:{A:0,B:1,C:0}}, {t:"전혀. 그냥 옷 갈아입듯 편하다.", s:{A:0,B:0,C:0}}] },
-            // Q3 (C)
-            { t: "혼자 있을 때, '내가 뭘 좋아하는지' 헷갈릴 때가 있다.", 
-              o: [{t:"자주 그렇다. 텅 빈 느낌이다.", s:{A:0,B:0,C:2}}, {t:"가끔 남들 취향을 내 것처럼 착각한다.", s:{A:0,B:0,C:1}}, {t:"내 취향은 확고하다.", s:{A:0,B:0,C:0}}] },
-            // Q4 (A)
-            { t: "상황에 따라 목소리 톤이나 성격을 완전히 바꿀 수 있다.", 
-              o: [{t:"자유자재로 가능하다.", s:{A:2,B:0,C:0}}, {t:"노력하면 흉내는 낸다.", s:{A:1,B:0,C:0}}, {t:"어색해서 못 한다.", s:{A:0,B:0,C:0}}] },
-            // Q5 (B)
-            { t: "웃고 있지만 속으로는 울고 있거나 화를 내는 상황이 잦다.", 
-              o: [{t:"거의 매일 그렇다.", s:{A:0,B:2,C:0}}, {t:"종종 사회생활상 필요하다.", s:{A:0,B:1,C:0}}, {t:"싫으면 싫다고 표현한다.", s:{A:0,B:0,C:0}}] },
-            // Q6 (C)
-            { t: "타인이 정의하는 '나'와 실제 '나'의 차이가 느껴지지 않는다.", 
-              o: [{t:"그렇다. 보여지는 게 곧 나다.", s:{A:0,B:0,C:2}}, {t:"차이는 있지만 크게 신경 안 쓴다.", s:{A:0,B:0,C:1}}, {t:"괴리감이 분명히 있다.", s:{A:0,B:0,C:0}}] },
-            // Q7 (A)
-            { t: "거짓말을 해야 하는 상황에서, 상대방을 완벽히 속일 자신이 있다.", 
-              o: [{t:"물론이다. 얼굴색 하나 안 변한다.", s:{A:2,B:0,C:0}}, {t:"어느 정도는 속일 수 있다.", s:{A:1,B:0,C:0}}, {t:"죄책감 때문에 티가 난다.", s:{A:0,B:0,C:0}}] },
-            // Q8 (B)
-            { t: "나의 진짜 모습을 보여주면 사람들이 떠나갈 것이라 생각한다.", 
-              o: [{t:"강하게 확신한다. 두렵다.", s:{A:0,B:2,C:0}}, {t:"조금 걱정되긴 한다.", s:{A:0,B:1,C:0}}, {t:"떠날 사람은 떠나라고 생각한다.", s:{A:0,B:0,C:0}}] },
-            // Q9 (C)
-            { t: "과거의 내 성격이 어땠는지 잘 기억나지 않는다.", 
-              o: [{t:"기억이 흐릿하다. 너무 많이 변했다.", s:{A:0,B:0,C:2}}, {t:"변하긴 했지만 기억은 난다.", s:{A:0,B:0,C:1}}, {t:"나는 예전이나 지금이나 똑같다.", s:{A:0,B:0,C:0}}] },
-            // Q10 (Combined)
-            { t: "상사가 부당한 지시를 내렸을 때, 당신의 반응은?", 
-              o: [{t:"웃으며 \"알겠습니다\" (속으론 욕함)", s:{A:1,B:2,C:0}}, {t:"무표정으로 기계적인 대답", s:{A:1,B:0,C:1}}, {t:"표정이 굳어지며 반박", s:{A:0,B:0,C:0}}] },
-            // Q11 (Combined)
-            { t: "당신에게 '가면'이란 무엇인가?", 
-              o: [{t:"나를 지켜주는 방패", s:{A:1,B:0,C:0}}, {t:"살을 파고드는 족쇄", s:{A:0,B:2,C:0}}, {t:"내 얼굴 그 자체", s:{A:1,B:0,C:2}}] },
-            // Q12 (Final Check)
-            { t: "지금 이 테스트를 하는 순간에도, 누군가가 볼까 봐 신경 쓰이는가?", 
-              o: [{t:"매우 신경 쓰인다.", s:{A:0,B:2,C:0}}, {t:"조금 신경 쓰인다.", s:{A:1,B:0,C:0}}, {t:"전혀 신경 안 쓴다.", s:{A:0,B:0,C:0}}] }
+            { t: "마음에 들지 않는 사람과도 30분 이상 즐겁게 대화할 수 있다.", o: [{t:"식은 죽 먹기다.", s:{A:2,B:0,C:0}}, {t:"가능은 하지만 피곤하다.", s:{A:1,B:1,C:0}}, {t:"표정에 다 드러나서 불가능하다.", s:{A:0,B:0,C:0}}] },
+            { t: "사람들과 어울리고 집에 돌아오면 가면을 찢어버리고 싶은 충동을 느낀다.", o: [{t:"자주 느낀다. 끔찍하다.", s:{A:0,B:2,C:0}}, {t:"가끔 피곤할 때만.", s:{A:0,B:1,C:0}}, {t:"전혀. 그냥 옷 갈아입듯 편하다.", s:{A:0,B:0,C:0}}] },
+            { t: "혼자 있을 때, '내가 뭘 좋아하는지' 헷갈릴 때가 있다.", o: [{t:"자주 그렇다. 텅 빈 느낌이다.", s:{A:0,B:0,C:2}}, {t:"가끔 남들 취향을 내 것처럼 착각한다.", s:{A:0,B:0,C:1}}, {t:"내 취향은 확고하다.", s:{A:0,B:0,C:0}}] },
+            { t: "상황에 따라 목소리 톤이나 성격을 완전히 바꿀 수 있다.", o: [{t:"자유자재로 가능하다.", s:{A:2,B:0,C:0}}, {t:"노력하면 흉내는 낸다.", s:{A:1,B:0,C:0}}, {t:"어색해서 못 한다.", s:{A:0,B:0,C:0}}] },
+            { t: "웃고 있지만 속으로는 울고 있거나 화를 내는 상황이 잦다.", o: [{t:"거의 매일 그렇다.", s:{A:0,B:2,C:0}}, {t:"종종 사회생활상 필요하다.", s:{A:0,B:1,C:0}}, {t:"싫으면 싫다고 표현한다.", s:{A:0,B:0,C:0}}] },
+            { t: "타인이 정의하는 '나'와 실제 '나'의 차이가 느껴지지 않는다.", o: [{t:"그렇다. 보여지는 게 곧 나다.", s:{A:0,B:0,C:2}}, {t:"차이는 있지만 크게 신경 안 쓴다.", s:{A:0,B:0,C:1}}, {t:"괴리감이 분명히 있다.", s:{A:0,B:0,C:0}}] },
+            { t: "거짓말을 해야 하는 상황에서, 상대방을 완벽히 속일 자신이 있다.", o: [{t:"물론이다. 얼굴색 하나 안 변한다.", s:{A:2,B:0,C:0}}, {t:"어느 정도는 속일 수 있다.", s:{A:1,B:0,C:0}}, {t:"죄책감 때문에 티가 난다.", s:{A:0,B:0,C:0}}] },
+            { t: "나의 진짜 모습을 보여주면 사람들이 떠나갈 것이라 생각한다.", o: [{t:"강하게 확신한다. 두렵다.", s:{A:0,B:2,C:0}}, {t:"조금 걱정되긴 한다.", s:{A:0,B:1,C:0}}, {t:"떠날 사람은 떠나갈 것이다.", s:{A:0,B:0,C:0}}] },
+            { t: "과거의 내 성격이 어땠는지 잘 기억나지 않는다.", o: [{t:"기억이 흐릿하다. 너무 많이 변했다.", s:{A:0,B:0,C:2}}, {t:"변하긴 했지만 기억은 난다.", s:{A:0,B:0,C:1}}, {t:"나는 예전이나 지금이나 똑같다.", s:{A:0,B:0,C:0}}] },
+            { t: "상사가 부당한 지시를 내렸을 때, 당신의 반응은?", o: [{t:"웃으며 \"알겠습니다\" (속으론 욕함)", s:{A:1,B:2,C:0}}, {t:"무표정으로 기계적인 대답", s:{A:1,B:0,C:1}}, {t:"표정이 굳어지며 반박", s:{A:0,B:0,C:0}}] },
+            { t: "당신에게 '가면'이란 무엇인가?", o: [{t:"나를 지켜주는 방패", s:{A:1,B:0,C:0}}, {t:"살을 파고드는 족쇄", s:{A:0,B:2,C:0}}, {t:"내 얼굴 그 자체", s:{A:1,B:0,C:2}}] },
+            { t: "지금 이 테스트를 하는 순간에도, 누군가가 볼까 봐 신경 쓰이는가?", o: [{t:"매우 신경 쓰인다.", s:{A:0,B:2,C:0}}, {t:"조금 신경 쓰인다.", s:{A:0,B:0,C:0}}, {t:"전혀 신경 안 쓴다.", s:{A:0,B:0,C:0}}] }
         ];
 
         function init() { loadQ(); }
@@ -245,30 +261,45 @@
             scores.B += vals.B;
             scores.C += vals.C;
             
-            // 시각 효과: 질문 진행될수록 얼굴이 조금씩 깨짐 (글리치)
-            const face = document.getElementById('faceIcon');
-            face.classList.add('glitch-effect');
-            setTimeout(()=>face.classList.remove('glitch-effect'), 400);
+            const face = document.getElementById('faceContainer');
+            if (vals.B > 0) {
+                face.classList.add('damage-effect');
+                setTimeout(()=>face.classList.remove('damage-effect'), 500);
+                painStack += vals.B;
+                updateCracks();
+            } else if (vals.C > 0) {
+                let currentOp = parseFloat(window.getComputedStyle(face).opacity);
+                face.style.opacity = Math.max(0.4, currentOp - 0.05).toFixed(2);
+                face.classList.add('glitch-effect');
+                setTimeout(()=>face.classList.remove('glitch-effect'), 300);
+            } else {
+                face.classList.add('glitch-effect');
+                setTimeout(()=>face.classList.remove('glitch-effect'), 300);
+            }
 
             currentQ++;
             if(currentQ < questions.length) loadQ();
             else showResult();
         }
 
+        function updateCracks() {
+            if (painStack >= 2) document.getElementById('crack1').style.opacity = 1;
+            if (painStack >= 4) document.getElementById('crack2').style.opacity = 1;
+            if (painStack >= 7) document.getElementById('crack3').style.opacity = 1;
+            if (painStack >= 10) document.getElementById('crack4').style.opacity = 1;
+            if (painStack >= 13) document.getElementById('crack5').style.opacity = 1;
+            if (painStack > 5) document.getElementById('scannerBox').style.borderColor = 'rgba(255, 0, 85, 0.7)';
+        }
+
         function showResult() {
             document.getElementById('quizSection').classList.add('hidden');
-            document.getElementById('scanner').classList.add('hidden');
+            document.getElementById('scannerBox').classList.add('hidden');
             document.getElementById('resultSection').style.display = 'block';
 
-            // 1. 점수 정규화 (최대치 기준 퍼센트)
-            // A(Skill): Max approx 12
-            // B(Pain): Max approx 12
-            // C(Void): Max approx 10
             const pA = Math.min(100, Math.round((scores.A / 10) * 100));
             const pB = Math.min(100, Math.round((scores.B / 10) * 100));
             const pC = Math.min(100, Math.round((scores.C / 8) * 100));
 
-            // 2. 그래프 적용
             setTimeout(() => {
                 document.getElementById('fillA').style.width = pA + '%';
                 document.getElementById('fillB').style.width = pB + '%';
@@ -278,13 +309,9 @@
                 document.getElementById('valC').innerText = pC + '%';
             }, 100);
 
-            // 3. 9가지 Archetype Logic (Threshold: 50%)
-            // High = 50% 이상, Low = 50% 미만
             const isHighA = pA >= 50;
             const isHighB = pB >= 50;
             const isHighC = pC >= 50;
-
-            // Balance Check: 모든 점수가 30~70 사이면 'Diplomat'
             const isBalanced = (pA > 30 && pA < 70) && (pB > 30 && pB < 70) && (pC > 30 && pC < 70);
 
             let result = {};
@@ -305,7 +332,7 @@
                 result = { t: "THE GLASS DOLL (유리 인형)", d: "깨지기 쉬운 자아. 가면을 쓸 능력은 부족한데, 타인의 시선은 너무나 두려워합니다.", a: "'미움받을 용기'를 읽어보세요. 모두에게 사랑받을 순 없습니다." };
             } else if (!isHighA && !isHighB && isHighC) {
                 result = { t: "THE FADING GHOST (흐릿한 유령)", d: "무기력한 방관자. 고통도, 연기도, 자아도 희미합니다. 세상과 단절되어 부유하고 있습니다.", a: "작은 호기심이라도 찾아내어 세상과 연결고리를 만드세요." };
-            } else { // Low Low Low
+            } else { 
                 result = { t: "THE RAW STONE (원석)", d: "가공되지 않은 돌. 가면 따윈 쓰지 않습니다. 호불호가 갈릴 수 있지만, 가장 솔직하고 단단한 자아입니다.", a: "당신의 솔직함은 무기지만, 때로는 부드러움도 필요합니다." };
             }
 
@@ -313,10 +340,12 @@
             document.getElementById('resultDesc').innerText = result.d;
             document.getElementById('resultAdvice').innerText = ">>> ADVICE: " + result.a;
 
-            // 태그 생성
+            // ★ 동적 공유 텍스트 생성 ★
+            finalShareText = `[ 🧬 BIOMETRIC SCAN REPORT ]\nSUBJECT: Social Mask Index\n\nTYPE: ${result.t}\nLEVEL: Acting ${pA}% / Pain ${pB}% / Void ${pC}%\n\n"${result.d}"\n\n>>> 진단 데이터 확인하기\nhttps://the-oracle-lab.github.io/dark/test3.html`;
+
             const tags = [
-                { l: "Acting Skill", v: isHighA ? "HIGH" : "LOW", c: isHighA },
-                { l: "Pain Level", v: isHighB ? "HIGH" : "LOW", c: isHighB },
+                { l: "Acting", v: isHighA ? "HIGH" : "LOW", c: isHighA },
+                { l: "Pain", v: isHighB ? "HIGH" : "LOW", c: isHighB },
                 { l: "Identity", v: isHighC ? "LOST" : "CLEAR", c: isHighC }
             ];
             
@@ -327,6 +356,25 @@
                 s.innerText = `${t.l}: ${t.v}`;
                 tagBox.appendChild(s);
             });
+        }
+
+        // 공유 버튼 기능
+        function shareResult() {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(finalShareText).then(() => {
+                    alert("DATA EXTRACTED.\n(결과가 복사되었습니다. 연구소에 전송하세요.)");
+                }).catch(() => {
+                    alert("ACCESS DENIED (Clipboard Error)");
+                });
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = finalShareText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert("DATA EXTRACTED.\n(결과가 복사되었습니다.)");
+            }
         }
 
         init();
